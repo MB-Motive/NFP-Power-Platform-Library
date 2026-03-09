@@ -1,6 +1,6 @@
 # Contributing Guidelines for Power Platform Solutions
 
-Thank you for your interest in contributing to the Power Platform Solutions repository! We welcome contributions from everyone. Please follow these guidelines to ensure a smooth and efficient process.
+Thank you for your interest in contributing to the NFP Power Platform Solutions repository! We welcome contributions from everyone. Please follow these guidelines to ensure a smooth and efficient process.
 
 ## Setup Instructions
 1. **Fork the repository**: Click the fork button on the top right of the repository page to create a copy of the repository in your GitHub account.
@@ -26,7 +26,7 @@ Thank you for your interest in contributing to the Power Platform Solutions repo
 4. **Open a Pull Request**: Go to the original repository and click on **Pull Requests**, then click **New Pull Request**. Choose your branch and submit your PR.
 
 ## Solution Requirements
-- Ensure that your solution meets the requirements and follows the architecture guidelines.
+- Ensure that your solution follows best practices.
 - Test your solution thoroughly before submission.
 
 ## Documentation Standards
@@ -36,7 +36,6 @@ Thank you for your interest in contributing to the Power Platform Solutions repo
 
 ## Commit Guidelines
 - Use the present tense when writing commit messages.
-- Keep your commit messages under 72 characters.
 - Reference issues in the commit message if applicable.
 
 ## Pull Request Process
@@ -44,7 +43,7 @@ Thank you for your interest in contributing to the Power Platform Solutions repo
   - A summary of changes made
   - Related issues or pull requests
   - Any additional context needed for review.
-- Request reviews from at least two contributors.
+- Request reviews from other contributors.
 - Be responsive to feedback and make necessary changes promptly.
 
-Thank you for your contributions! Together, we can enhance the Power Platform community.
+Thank you for your contributions!
