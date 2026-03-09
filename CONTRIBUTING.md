@@ -1,33 +1,50 @@
-# Contributing to the NFP Power Platform Library
+# Contributing Guidelines for Power Platform Solutions
 
-Thank you for considering contributing to our Power Platform solutions library! We appreciate your interest and look forward to your submissions. Below are the guidelines to help you get started.
+Thank you for your interest in contributing to the Power Platform Solutions repository! We welcome contributions from everyone. Please follow these guidelines to ensure a smooth and efficient process.
 
-## 1. Types of Contributions
-We welcome different types of contributions, including:
-- Bug reports
-- Feature requests
-- Code contributions (new features, improvements, fixes)
-- Documentation updates
+## Setup Instructions
+1. **Fork the repository**: Click the fork button on the top right of the repository page to create a copy of the repository in your GitHub account.
+2. **Clone your fork**: Run the following command in your terminal:
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/NFP-Power-Platform-Library.git
+   ```
+3. **Set up your environment**: Follow the [setup instructions](link to setup instructions) to configure your development environment.
 
-## 2. Getting Started
-- **Fork the Repository:** Click on the "Fork" button to create a personal copy of the repository.
-- **Clone Your Fork:** Use `git clone <your-fork-url>` to clone your forked repository.
-- **Create a Branch:** Create a new branch for your changes with `git checkout -b my-feature-branch`.
+## Submission Process
+1. **Create a new branch**: Create a new branch for your feature or bug fix:
+   ```bash
+   git checkout -b branch-name
+   ```
+2. **Commit your changes**: Make your changes and commit them with a clear message describing the change:
+   ```bash
+   git commit -m "Description of your changes"
+   ```
+3. **Push to your fork**: Push your changes to your fork on GitHub:
+   ```bash
+   git push origin branch-name
+   ```
+4. **Open a Pull Request**: Go to the original repository and click on **Pull Requests**, then click **New Pull Request**. Choose your branch and submit your PR.
 
-## 3. Coding Guidelines
-- Follow the coding standards used throughout the library.
-- Write clear and meaningful commit messages.
-- Keep your code clean and well-documented.
+## Solution Requirements
+- Ensure that your solution meets the requirements and follows the architecture guidelines.
+- Test your solution thoroughly before submission.
 
-## 4. Submitting Changes
-- **Push to Your Fork:** Use `git push origin my-feature-branch` to push your changes to your fork.
-- **Create a Pull Request:** Go to the original repository and create a new pull request (PR) from your branch. Ensure you provide a clear description of your changes.
+## Documentation Standards
+- Write clear and concise documentation for new features.
+- Use markdown format and ensure consistency throughout.
+- Update related documentation if necessary.
 
-## 5. Review Process
-- Once your PR is submitted, it may be reviewed by maintainers. They may suggest changes or improvements. Please be responsive and willing to make adjustments.
+## Commit Guidelines
+- Use the present tense when writing commit messages.
+- Keep your commit messages under 72 characters.
+- Reference issues in the commit message if applicable.
 
-## 6. Code of Conduct
-By participating in this project, you agree to abide by our Code of Conduct. Make sure to read it thoroughly to understand our expectations.
+## Pull Request Process
+- Ensure your PR description includes:
+  - A summary of changes made
+  - Related issues or pull requests
+  - Any additional context needed for review.
+- Request reviews from at least two contributors.
+- Be responsive to feedback and make necessary changes promptly.
 
-## 7. Thank You!
-Your contributions are valuable to us, and we’re excited to work alongside you to enhance the NFP Power Platform Library!
+Thank you for your contributions! Together, we can enhance the Power Platform community.
