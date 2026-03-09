@@ -1,58 +1,64 @@
 # NFP Power Platform Library
 
 ## Overview
-The NFP Power Platform Library is a collection of reusable components and solutions designed to accelerate development within the Microsoft Power Platform ecosystem. This library aims to provide developers with the tools and resources necessary to build robust applications quickly and efficiently.
+The NFP Power Platform Library is a collection of reusable components and solutions designed to accelerate development within the Microsoft Power Platform ecosystem. This library aims to provide not-for-profits with the tools and resources necessary to build robust applications quickly and efficiently.
 
-## Getting Started
-To get started with the NFP Power Platform Library:
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/MB-Motive/NFP-Power-Platform-Library.git
-   ```
-2. Navigate into the cloned directory:
-   ```bash
-   cd NFP-Power-Platform-Library
-   ```
-3. Install the required dependencies (if any) as per the instructions provided in the respective solution folders.
+## 💡 Available Solutions
+### K10 Assessment
+- Purpose: [Add description]
+- Target Audience: [Add target audience]
+- Version: [Add version]
+- Status: [Active/In Development]
+- Documentation: K10 Assessment/README.md
 
-## Repository Structure
-The repository is organized in the following structure:
-```
-NFP-Power-Platform-Library/
-├── README.md
-├── src/
-│   ├── Component1/
-│   ├── Component2/
-│   └── Component3/
-├── examples/
-└── tests/
-```
-- **src/**: Contains the source code for various components.
-- **examples/**: Provides example implementations of the components.
-- **tests/**: Includes unit and integration tests for validating the components.
+## 🤝 Contributing
+We welcome contributions from the community! Whether you're a nonprofit professional, Power Platform developer, or enthusiast, your contributions help strengthen the ecosystem.
 
-## Available Solutions
-The library includes a variety of solutions tailored for common tasks in the Power Platform, such as:
-- Solution A: Description of Solution A.
-- Solution B: Description of Solution B.
-- Solution C: Description of Solution C.
+### Before You Contribute
+Read the [Contributing](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/CONTRIBUTING.md) guidelines
+Check existing [Issues](https://github.com/MB-Motive/NFP-Power-Platform-Library/issues) to avoid duplicates
+Open an Issue to discuss your solution before starting
 
-## Contributing Guidelines
-Contributions are welcome! To contribute to the NFP Power Platform Library:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. Make your changes and commit them:
-   ```bash
-   git commit -m 'Add some feature'
-   ```
-4. Push to the branch:
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-5. Create a new Pull Request.
+### Contribution Types
+- 🆕 New Solutions: Power Apps, Power Automate flows, or integrated solutions
+- 🐛 Bug Fixes: Improvements to existing solutions
+- 📚 Documentation: Better setup guides, examples, or best practices
+- 💬 Ideas: Suggestions for new solutions or features
 
-## Support
-For support, please open an issue on this repository or contact the maintainers directly. We appreciate your feedback!
+## 📖 Documentation
+- CONTRIBUTING.md - Guidelines for contributing solutions
+- LICENSE - MIT License
+- Solution READMEs - Each solution folder contains its own README with setup and usage instructions
+
+## ❓ Getting Help
+
+### Questions or Issues?
+- 📝 Report a Bug: Open a Bug Report Issue
+- 💡 Request a Feature: Open a Feature Request
+- 💬 Start a Discussion: [Use GitHub Discussions](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions)
+- 📧 Contact Maintainers: Open an Issue
+
+### Resources
+- [Microsoft Power Platform Documentation](https://learn.microsoft.com/en-us/power-platform/)
+- [Power Platform Learn Path](https://learn.microsoft.com/en-us/training/browse/?products=power-platform)
+- [Power Platform CLI Guide](https://learn.microsoft.com/en-us/power-platform/developer/cli/introduction?tabs=windows)
+
+## 📄 License
+This project is licensed under the MIT License. See [LICENSE](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/LICENSE) for details.
+
+## 🎯 Roadmap
+Ideas for future solutions might include:
+- Donor Management solutions
+- Volunteer Coordination systems
+- Event Registration solutions
+- Membership Management systems
+- Grant Management tools
+- Reporting and Analytics solutions
+
+Have a solution idea? Open a Feature Request!
+
+## 🤝 Code of Conduct
+We are committed to providing a welcoming and inclusive environment. All participants are expected to be respectful and professional.
+
+Last Updated: March 2026
+Made with ❤️ for the NFP Community
