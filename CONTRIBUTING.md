@@ -28,9 +28,15 @@ Thank you for your interest in contributing to the NFP Power Platform Solutions 
 ## Solution Requirements
 - Ensure that your solution follows best practices.
 - Test your solution thoroughly before submission.
+  - Solution imports successfully into a fresh environment
+  - All flows trigger correctly
+  - Canvas apps load without errors
+  - Forms save and validate data properly
+  - No hardcoded credentials or API keys
+  - All features work as documented
 
 ## Documentation Standards
-- Write clear and concise documentation for new features.
+- Write clear and concise documentation.
 - Use markdown format and ensure consistency throughout.
 - Update related documentation if necessary.
 
