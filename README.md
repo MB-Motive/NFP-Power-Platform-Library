@@ -9,7 +9,7 @@ The NFP Power Platform Library is a collection of reusable components and soluti
 - Target Audience: [Add target audience]
 - Version: [Add version]
 - Status: [Active/In Development]
-- Documentation: K10 Assessment/README.md
+- Documentation: [K10 Assessment/README.md](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/K10%20Assessment/README.md)
 
 ## 🤝 Contributing
 We welcome contributions from the community! Whether you're a nonprofit professional, Power Platform developer, or enthusiast, your contributions help strengthen the ecosystem.
