@@ -7,8 +7,8 @@ The NFP Power Platform Library is a collection of reusable components and soluti
 ### K10 Assessment
 - Purpose: [Add description]
 - Target Audience: [Add target audience]
-- Version: [Add version]
-- Status: [Active/In Development]
+- Version: 1.0.0.0
+- Status: In Development
 - Documentation: [K10 Assessment/README.md](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/K10%20Assessment/README.md)
 
 ## 🤝 Contributing
@@ -17,7 +17,7 @@ We welcome contributions from the community! Whether you're a nonprofit professi
 ### Before You Contribute
 - Read the [Contributing](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/CONTRIBUTING.md) guidelines
 - Check existing [Issues](https://github.com/MB-Motive/NFP-Power-Platform-Library/issues) to avoid duplicates
-- Open an Issue to discuss your solution before starting
+- Request a feature or [start a discussion](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions) for your solution before starting (optional)
 
 ### Contribution Types
 - 🆕 New Solutions: Power Apps, Power Automate flows, or integrated solutions
@@ -25,17 +25,12 @@ We welcome contributions from the community! Whether you're a nonprofit professi
 - 📚 Documentation: Better setup guides, examples, or best practices
 - 💬 Ideas: Suggestions for new solutions or features
 
-## 📖 Documentation
-- CONTRIBUTING.md - Guidelines for contributing solutions
-- LICENSE - MIT License
-- Solution READMEs - Each solution folder contains its own README with setup and usage instructions
-
 ## ❓ Getting Help
 
 ### Questions or Issues?
 - 📝 Report a Bug: Open a Bug Report Issue
 - 💡 Request a Feature: Open a Feature Request
-- 💬 Start a Discussion: [Use GitHub Discussions](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions)
+- 💬 [Start a Discussion](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions)
 - 📧 Contact Maintainers: Open an Issue
 
 ### Resources
