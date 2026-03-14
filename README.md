@@ -15,9 +15,9 @@ The NFP Power Platform Library is a collection of reusable components and soluti
 We welcome contributions from the community! Whether you're a nonprofit professional, Power Platform developer, or enthusiast, your contributions help strengthen the ecosystem.
 
 ### Before You Contribute
-- Read the [Contributing](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/CONTRIBUTING.md) guidelines
+- Read the [ontributing](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/CONTRIBUTING.md) guidelines
 - Check existing [Issues](https://github.com/MB-Motive/NFP-Power-Platform-Library/issues) to avoid duplicates
-- Request a feature or [start a discussion](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions) for your solution before starting (optional)
+- Request a feature or [open a discussion](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions) for your solution before starting (optional)
 
 ### Contribution Types
 - 🆕 New Solutions: Power Apps, Power Automate flows, or integrated solutions
@@ -28,10 +28,9 @@ We welcome contributions from the community! Whether you're a nonprofit professi
 ## ❓ Getting Help
 
 ### Questions or Issues?
-- 📝 Report a Bug: Open a Bug Report Issue
-- 💡 Request a Feature: Open a Feature Request
+- 📝 Report a Bug
+- 💡 Request a Feature
 - 💬 [Start a Discussion](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions)
-- 📧 Contact Maintainers: Open an Issue
 
 ### Resources
 - [Microsoft Power Platform Documentation](https://learn.microsoft.com/en-us/power-platform/)
@@ -39,7 +38,7 @@ We welcome contributions from the community! Whether you're a nonprofit professi
 - [Power Platform CLI Guide](https://learn.microsoft.com/en-us/power-platform/developer/cli/introduction?tabs=windows)
 
 ## 📄 License
-This project is licensed under the MIT License. See [LICENSE](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/LICENSE) for details.
+This project is licensed under the [MIT License](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/LICENSE).
 
 ## 🎯 Roadmap
 Ideas for future solutions might include:
