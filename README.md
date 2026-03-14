@@ -15,9 +15,9 @@ The NFP Power Platform Library is a collection of reusable components and soluti
 We welcome contributions from the community! Whether you're a nonprofit professional, Power Platform developer, or enthusiast, your contributions help strengthen the ecosystem.
 
 ### Before You Contribute
-Read the [Contributing](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/CONTRIBUTING.md) guidelines
-Check existing [Issues](https://github.com/MB-Motive/NFP-Power-Platform-Library/issues) to avoid duplicates
-Open an Issue to discuss your solution before starting
+- Read the [Contributing](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/CONTRIBUTING.md) guidelines
+- Check existing [Issues](https://github.com/MB-Motive/NFP-Power-Platform-Library/issues) to avoid duplicates
+- Open an Issue to discuss your solution before starting
 
 ### Contribution Types
 - 🆕 New Solutions: Power Apps, Power Automate flows, or integrated solutions
@@ -60,5 +60,5 @@ Have a solution idea? Open a Feature Request!
 ## 🤝 Code of Conduct
 We are committed to providing a welcoming and inclusive environment. All participants are expected to be respectful and professional.
 
-Last Updated: March 2026
+Last Updated: March 2026  
 Made with ❤️ for the NFP Community
