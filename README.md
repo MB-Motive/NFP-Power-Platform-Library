@@ -38,7 +38,8 @@ We welcome contributions from the community! Whether you're a nonprofit professi
 - [Power Platform CLI Guide](https://learn.microsoft.com/en-us/power-platform/developer/cli/introduction?tabs=windows)
 
 ## 📄 License
-This project is licensed under the [MIT License](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/LICENSE).
+This project is licensed under the [MIT License](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/LICENSE).  
+All solutions are supplied as-is, and are meant to be a starting point for your organisation.
 
 ## 🎯 Roadmap
 Ideas for future solutions might include:
