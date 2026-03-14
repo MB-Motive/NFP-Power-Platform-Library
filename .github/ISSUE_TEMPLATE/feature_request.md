@@ -1,29 +1,42 @@
 ---
 name: Feature Request
-description: Template for requesting a new feature
+about: Suggest an idea for a new solution or feature
 title: "[Feature Request] "
-body:
-  - type: markdown
-    attributes:
-      value: |
-        ## Problem Statement
-        Describe the issue that this feature request aims to solve.
+labels: ''
+assignees: MB-Motive
 
-        ## Proposed Solution
-        Explain how you plan to solve the issue with the proposed feature.
-
-        ## Alternative Solutions
-        List any alternative approaches you've considered.
-
-        ## Target Audience
-        Who will benefit from this change?
-
-        ## Additional Context
-        Provide any additional information that may help in evaluating this request.
-
-        ## Alignment Checklist
-        - [ ] This request aligns with the project goals.
-        - [ ] This request is feasible within the current timeline.
-        - [ ] This request considers the user experience.
-        - [ ] [Any other relevant criteria]
 ---
+
+## Problem Statement
+Describe the problem this feature would solve:
+- What NFP challenge does this address?
+- What workflow would it improve?
+- Who would benefit?
+
+## Proposed Solution
+Describe the solution you'd like:
+- What would this solution/feature do?
+- How would it work?
+- What components would it include? (canvas apps, flows, tables, etc.)
+
+## Alternative Solutions
+Describe alternative solutions or features you've considered:
+- What other approaches exist?
+- Why is your proposed solution better?
+
+## Target Audience
+Who is this solution/feature for?
+- Nonprofit type (e.g., education, healthcare, community services)
+- Role/department (e.g., volunteer coordinators, donors, administrators)
+- Organization size (small, medium, large)
+
+## Additional Context
+Add any other context, screenshots, mockups, or information:
+- Links to similar solutions
+- Reference documents
+- Example workflows
+
+## Is this aligned with the library?
+- [ ] This is an NFP-specific solution
+- [ ] This follows Power Platform best practices
+- [ ] This would benefit the broader NFP community

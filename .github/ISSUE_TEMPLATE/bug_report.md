@@ -1,6 +1,10 @@
 ---
 name: Bug Report
-description: Report a bug in the project
+about: Report a bug in one of the solutions
+title: "[BUG]"
+labels: ''
+assignees: MB-Motive
+
 ---
 
 ## Bug Description
@@ -12,10 +16,11 @@ description: Report a bug in the project
 *(Name of the solution where the bug was found.)*
 
 ## Steps to Reproduce
-
-1. *(First step)*
-2. *(Second step)*
-3. *(And so on...)*
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
 ## Expected Behavior
 
@@ -29,7 +34,7 @@ description: Report a bug in the project
 
 - **OS:**  
 - **Browser:**  
-- **Version:**  
+- **Solution Version:**  
 
 ## Screenshots / Logs
 
@@ -40,5 +45,7 @@ description: Report a bug in the project
 *(Add any other context about the problem here.)*
 
 ## Impact Level
-
-*(Specify the impact level: Low, Medium, High, Critical)*
+- [ ] Critical (solution non-functional)
+- [ ] High (major feature broken)
+- [ ] Medium (workaround available)
+- [ ] Low (minor issue)
