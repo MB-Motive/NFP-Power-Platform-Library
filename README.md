@@ -1,7 +1,7 @@
 # NFP Power Platform Library
 
 ## Overview
-The NFP Power Platform Library is a collection of reusable components and solutions designed to accelerate development within the Microsoft Power Platform ecosystem. This library aims to provide not-for-profits with the tools and resources necessary to build robust applications quickly and efficiently.
+The NFP Power Platform Library is a collection of reusable components and solutions designed to accelerate development within the Microsoft Power Platform ecosystem. This library aims to provide not-for-profits with the tools and resources necessary to build robust applications quickly and efficiently. This is built by and for the not-for-profit community.
 
 ## 💡 Available Solutions
 ### Kessler-10 (K10) Assessment
@@ -14,7 +14,7 @@ We welcome contributions from the community! Whether you're a nonprofit professi
 ### Before You Contribute
 - Read the [Contributing](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/CONTRIBUTING.md) guidelines
 - Check existing [Issues](https://github.com/MB-Motive/NFP-Power-Platform-Library/issues) to avoid duplicates
-- Request a feature or [open a discussion](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions) for your solution before starting (optional)
+- [Request a feature](https://github.com/MB-Motive/NFP-Power-Platform-Library/issues) or [open a discussion](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions) for your solution before starting (optional)
 
 ### Contribution Types
 - 🆕 New Solutions: Power Apps, Power Automate flows, or integrated solutions
@@ -25,21 +25,21 @@ We welcome contributions from the community! Whether you're a nonprofit professi
 ## ❓ Getting Help
 
 ### Questions or Issues?
-- 📝 Report a Bug
-- 💡 Request a Feature
+- 📝 [Create an Issue](https://github.com/MB-Motive/NFP-Power-Platform-Library/issues) to report a Bug or request a Feature
 - 💬 [Start a Discussion](https://github.com/MB-Motive/NFP-Power-Platform-Library/discussions)
 
 ### Resources
 - [Microsoft Power Platform Documentation](https://learn.microsoft.com/en-us/power-platform/)
 - [Power Platform Learn Path](https://learn.microsoft.com/en-us/training/browse/?products=power-platform)
 - [Power Platform CLI Guide](https://learn.microsoft.com/en-us/power-platform/developer/cli/introduction?tabs=windows)
+- [Microsoft for Nonprofit Github repository](https://github.com/microsoft/Nonprofits)
 
 ## 📄 License
 This project is licensed under the [MIT License](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/LICENSE).  
 All solutions are supplied as-is, and are meant to be a starting point for your organisation.
 
 ## 🎯 Roadmap
-Ideas for future solutions might include:
+Ideas for future components and solutions might include:
 - Donor Management solutions
 - Volunteer Coordination systems
 - Event Registration solutions
