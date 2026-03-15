@@ -1,7 +1,7 @@
 # NFP Power Platform Library
 
 ## Overview
-The NFP Power Platform Library is a collection of reusable components and solutions designed to accelerate development within the Microsoft Power Platform ecosystem. This library aims to provide not-for-profits with the tools and resources necessary to build robust applications quickly and efficiently. This is built by and for the not-for-profit community.
+Built by the not-for-profit community, the NFP Power Platform Library is a collection of open-source components and solutions designed to accelerate development within the Microsoft Power Platform ecosystem. This library aims to provide not-for-profits with the tools and resources necessary to build robust applications quickly and efficiently.
 
 ## 💡 Available Solutions
 ### Kessler-10 (K10) Assessment
