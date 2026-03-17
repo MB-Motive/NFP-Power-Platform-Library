@@ -2,14 +2,6 @@
 
 Thank you for your interest in contributing to the NFP Power Platform Solutions repository! We welcome contributions from everyone. Please follow these guidelines to ensure a smooth and efficient process.
 
-## Setup Instructions
-1. **Fork the repository**: Click the fork button on the top right of the repository page to create a copy of the repository in your GitHub account.
-2. **Clone your fork**: Run the following command in your terminal:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/NFP-Power-Platform-Library.git
-   ```
-3. **Set up your environment**: Follow the [setup instructions](link to setup instructions) to configure your development environment.
-
 ## Submission Process
 1. **Create a new branch**: Create a new branch for your feature or bug fix:
    ```bash
@@ -27,13 +19,14 @@ Thank you for your interest in contributing to the NFP Power Platform Solutions 
 
 ## Solution Requirements
 - Ensure that your solution follows best practices.
-- Test your solution thoroughly before submission.
+- Test your solution thoroughly before submission, for example:
   - Solution imports successfully into a fresh environment
   - All flows trigger correctly
   - Canvas apps load without errors
   - Forms save and validate data properly
-  - No hardcoded credentials or API keys
+  - No hardcoded credentials or API keys (use environment variables)
   - All features work as documented
+- Ensure no sensitive/confidential data is included in any solutions.
 
 ## Documentation Standards
 - Write clear and concise documentation.
