@@ -4,6 +4,10 @@
 Built by the not-for-profit community, the NFP Power Platform Library is a collection of open-source components and solutions designed to accelerate development within the Microsoft Power Platform ecosystem. This library aims to provide not-for-profits with the tools and resources necessary to build robust applications quickly and efficiently.
 
 ## 💡 Available Solutions
+### Power BI Embed app demo
+- Status: Available
+- Documentation: [Power BI Embed app/README.md](Power BI Embed app/README.md)
+
 ### Kessler-10 (K10) Assessment
 - Status: In Development
 - Documentation: [K10 Assessment/README.md](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/K10%20Assessment/README.md)
@@ -53,5 +57,5 @@ Have a solution idea? Open a Feature Request!
 ## 🤝 Code of Conduct
 We are committed to providing a welcoming and inclusive environment. All participants are expected to be respectful and professional.
 
-Last Updated: March 2026  
-Made with ❤️ for the NFP Community
+Last Updated: April 2026  
+Made for the NFP Community
