@@ -6,10 +6,13 @@ Built by the not-for-profit community, the NFP Power Platform Library is a colle
 ## 💡 Available Solutions
 ### Power BI Embed app demo
 - Status: Available
+- Product: Power BI
+- Description: A web app demonstrating the App Owns Data Power BI embedding pattern.
 - Documentation: [Power BI Embed app/README.md](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/Power%20BI%20Embed%20app/README.md)
 
 ### Kessler-10 (K10) Assessment
 - Status: In Development
+- Product: Power Apps/Dataverse, Microsoft Forms
 - Documentation: [K10 Assessment/README.md](https://github.com/MB-Motive/NFP-Power-Platform-Library/blob/main/K10%20Assessment/README.md)
 
 ## 🤝 Contributing
