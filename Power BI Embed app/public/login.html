@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in – Insights Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/branding.js" defer></script>
+  <style>
+    body { background: var(--navy); align-items: center; justify-content: center; }
+    .login-card { background: var(--white); border-radius: 16px; padding: 3rem 2.5rem; width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(0,0,0,0.3); animation: fadeUp 0.4s ease both; text-align: center; }
+    .login-logo { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; }
+    .login-logo .brand { font-size: 1.1rem; font-weight: 600; color: var(--navy); }
+    .login-card h1 { font-family: var(--font-disp); font-size: 1.6rem; font-weight: 400; color: var(--navy); margin-bottom: 0.5rem; }
+    .login-card h1 em { font-style: italic; color: var(--teal-dim); }
+    .login-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 2rem; }
+    .ms-btn { display: flex; align-items: center; justify-content: center; gap: 0.75rem; width: 100%; padding: 0.85rem 1.5rem; background: var(--navy); color: var(--white); font-family: var(--font-ui); font-size: 0.9rem; font-weight: 500; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; transition: background 0.15s; }
+    .ms-btn:hover { background: var(--navy-soft); }
+    .error-msg { margin-top: 1rem; padding: 0.6rem 0.9rem; background: #fff0f0; border: 1px solid #fcd0d0; border-radius: 7px; color: var(--danger); font-size: 0.78rem; display: none; }
+    .error-msg.visible { display: block; }
+    .login-footer { margin-top: 2rem; font-size: 0.7rem; color: #c0ccd8; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" data-brand-logo-mark><defs><filter id="lf0"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="0.4" result="effect1_foregroundBlur"/></filter><filter id="lf1"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="4" result="effect1_foregroundBlur"/></filter><linearGradient id="lg0" x1="46.6667" y1="-8.97795e-07" x2="88.8653" y2="89.4466" gradientUnits="userSpaceOnUse"><stop stop-color="#E6AD10"/><stop offset="1" stop-color="#C87E0E"/></linearGradient><linearGradient id="lg1" x1="31.9974" y1="24" x2="67.4859" y2="92.8262" gradientUnits="userSpaceOnUse"><stop stop-color="#F6D751"/><stop offset="1" stop-color="#E6AD10"/></linearGradient><linearGradient id="lg2" x1="11.9974" y1="48" x2="31.6083" y2="94.4775" gradientUnits="userSpaceOnUse"><stop stop-color="#F9E589"/><stop offset="1" stop-color="#F6D751"/></linearGradient><clipPath id="lc0"><rect width="96" height="96" fill="white"/></clipPath></defs><g clip-path="url(#lc0)"><mask id="lm0" mask-type="alpha" maskUnits="userSpaceOnUse" x="12" y="0" width="72" height="96"><path d="M52 4C52 1.79086 53.7909 0 56 0H80C82.2091 0 84 1.79086 84 4V92C84 94.2091 82.2091 96 80 96H16C13.7909 96 12 94.2091 12 92V52C12 49.7909 13.7909 48 16 48H32.0001V28C32.0001 25.7909 33.791 24 36.0001 24H52V4Z" fill="white"/></mask><g mask="url(#lm0)"><path d="M84 0L84 96H52L52 0H84Z" fill="url(#lg0)"/><g filter="url(#lf0)"><path d="M64 28.4V96.4H32V24.4H60C62.2091 24.4 64 26.1909 64 28.4Z" fill="black" fill-opacity="0.2"/></g><g filter="url(#lf1)"><path d="M64 30V98H32V26H60C62.2091 26 64 27.7909 64 30Z" fill="black" fill-opacity="0.18"/></g><path d="M64 28V96H32V24H60C62.2091 24 64 25.7909 64 28Z" fill="url(#lg1)"/><path d="M12 48V96H44V52C44 49.7909 42.2091 48 40 48H12Z" fill="url(#lg2)"/></g></g></svg>
+      <img data-brand-logo src="" style="display:none;height:32px;object-fit:contain" />
+      <span class="brand" data-brand="org_name">Organisation</span>
+    </div>
+    <h1>Your <em>insights,</em><br>one sign-in away.</h1>
+    <p>This portal is restricted to authorised users. Sign in with your Microsoft account to continue.</p>
+    <a class="ms-btn" href="/auth/login">
+      <svg width="20" height="20" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
+      Sign in with Microsoft
+    </a>
+    <div class="error-msg" id="error-msg"></div>
+    <div class="login-footer">Access is managed by your organisation's administrator.</div>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const errorMap = { login_failed:'Could not initiate login. Please try again.', invalid_state:'Security check failed. Please try again.', auth_denied:'Access was denied or cancelled.', callback_failed:'Login could not be completed. Please try again.' };
+    const err = params.get('error');
+    if (err && errorMap[err]) { const el=document.getElementById('error-msg'); el.textContent=errorMap[err]; el.classList.add('visible'); }
+  </script>
+</body>
+</html>

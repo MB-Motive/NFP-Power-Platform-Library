@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Insights Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/branding.js" defer></script>
+  <style>
+    main { flex: 1; padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .tab-bar { display: flex; gap: 0.25rem; border-bottom: 2px solid var(--border-light); animation: fadeUp 0.3s ease both; }
+    .tab-btn { font-family: var(--font-ui); font-size: 0.82rem; font-weight: 500; padding: 0.6rem 1.25rem; border: none; background: none; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; }
+    .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+    .tab-btn:hover:not(.active) { color: var(--text-primary); }
+    .tab-panel { display: none; animation: fadeUp 0.25s ease both; }
+    .tab-panel.active { display: block; }
+    .section-card { background: var(--white); border: 1px solid var(--border-light); border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 1.25rem; overflow: hidden; }
+    .section-header { padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); background: #fafcff; }
+    .section-header h3 { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
+    .section-header p  { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.15rem; }
+    .section-body { padding: 1.25rem; }
+
+    /* Workspace browser */
+    .workspace-item { margin-bottom: 0.75rem; }
+    .workspace-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: #f4f6f9; border-radius: 7px; cursor: pointer; font-size: 0.82rem; font-weight: 500; color: var(--text-primary); user-select: none; }
+    .workspace-header:hover { background: #eef1f7; }
+    .workspace-toggle { font-size: 0.65rem; color: var(--muted); transition: transform 0.2s; }
+    .workspace-toggle.open { transform: rotate(90deg); }
+    .workspace-reports { padding: 0.5rem 0 0 1.5rem; display: none; }
+    .workspace-reports.open { display: block; }
+    .pbi-report-row { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.5rem; border-radius: 6px; font-size: 0.8rem; }
+    .pbi-report-row:hover { background: #f8fafc; }
+    .pbi-report-row.added { color: var(--muted); }
+
+    /* Expand rows */
+    .expand-row td { padding: 0; }
+    .expand-content { padding: 1rem 1.25rem; background: #f8fafc; border-top: 1px solid #f0f3f8; }
+
+    /* Chips */
+    .chip-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+    .chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.5rem 0.2rem 0.65rem; background: #eef1f7; border-radius: 20px; font-size: 0.72rem; color: var(--text-primary); }
+    .chip .chip-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 0.8rem; padding: 0; line-height: 1; }
+    .chip .chip-remove:hover { color: var(--danger); }
+    .inline-add { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; flex-wrap: wrap; }
+    .inline-add select { max-width: 240px; }
+    .override-granted { background: rgba(0,180,166,0.08); color: var(--teal-dim); border: 1px solid rgba(0,180,166,0.2); }
+    .override-revoked { background: #fff0f0; color: var(--danger); border: 1px solid #fcd0d0; }
+
+    /* RLS tag */
+    .role-tag { font-size: 0.7rem; background: rgba(0,180,166,0.08); color: var(--teal-dim); border: 1px solid rgba(0,180,166,0.2); border-radius: 20px; padding: 0.1rem 0.5rem; }
+
+    /* Display settings toggles */
+    .display-settings { padding: 0.75rem 1rem; background: #f4f6f9; border-radius: 8px; margin-top: 0.5rem; }
+    .display-settings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem 1.5rem; margin-top: 0.5rem; }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: var(--text-primary); padding: 0.25rem 0; }
+    .toggle-row span { color: var(--text-secondary); font-size: 0.72rem; }
+    .toggle { position: relative; display: inline-block; width: 34px; height: 20px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 20px; transition: 0.2s; }
+    .toggle-slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+    .toggle input:checked + .toggle-slider { background: var(--teal); }
+    .toggle input:checked + .toggle-slider:before { transform: translateX(14px); }
+
+    /* Colour pickers */
+    .colour-row { display: flex; gap: 0.5rem; align-items: center; }
+    .colour-row input[type="color"] { width: 40px; height: 36px; padding: 2px; border-radius: 6px; border: 1px solid var(--border-light); cursor: pointer; flex-shrink: 0; }
+
+    /* Role input */
+    .role-input { display: flex; gap: 0.4rem; align-items: center; }
+
+    /* Inline group edit */
+    .group-edit-inputs { display: flex; flex-direction: column; gap: 0.3rem; }
+    .group-edit-inputs input { font-size: 0.82rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/dashboard.html">
+      <div class="logo-mark" style="background:transparent;padding:0" data-brand-logo-mark>
+        <svg width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><filter id="af0"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="0.4" result="effect1_foregroundBlur"/></filter><filter id="af1"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="4" result="effect1_foregroundBlur"/></filter><linearGradient id="ag0" x1="46.6667" y1="0" x2="88.8653" y2="89.4466" gradientUnits="userSpaceOnUse"><stop stop-color="#E6AD10"/><stop offset="1" stop-color="#C87E0E"/></linearGradient><linearGradient id="ag1" x1="31.9974" y1="24" x2="67.4859" y2="92.8262" gradientUnits="userSpaceOnUse"><stop stop-color="#F6D751"/><stop offset="1" stop-color="#E6AD10"/></linearGradient><linearGradient id="ag2" x1="11.9974" y1="48" x2="31.6083" y2="94.4775" gradientUnits="userSpaceOnUse"><stop stop-color="#F9E589"/><stop offset="1" stop-color="#F6D751"/></linearGradient><clipPath id="ac0"><rect width="96" height="96" fill="white"/></clipPath></defs><g clip-path="url(#ac0)"><mask id="am0" mask-type="alpha" maskUnits="userSpaceOnUse" x="12" y="0" width="72" height="96"><path d="M52 4C52 1.79086 53.7909 0 56 0H80C82.2091 0 84 1.79086 84 4V92C84 94.2091 82.2091 96 80 96H16C13.7909 96 12 94.2091 12 92V52C12 49.7909 13.7909 48 16 48H32.0001V28C32.0001 25.7909 33.791 24 36.0001 24H52V4Z" fill="white"/></mask><g mask="url(#am0)"><path d="M84 0L84 96H52L52 0H84Z" fill="url(#ag0)"/><g filter="url(#af0)"><path d="M64 28.4V96.4H32V24.4H60C62.2091 24.4 64 26.1909 64 28.4Z" fill="black" fill-opacity="0.2"/></g><g filter="url(#af1)"><path d="M64 30V98H32V26H60C62.2091 26 64 27.7909 64 30Z" fill="black" fill-opacity="0.18"/></g><path d="M64 28V96H32V24H60C62.2091 24 64 25.7909 64 28Z" fill="url(#ag1)"/><path d="M12 48V96H44V52C44 49.7909 42.2091 48 40 48H12Z" fill="url(#ag2)"/></g></g></svg>
+      </div>
+      <img data-brand-logo src="" style="display:none;height:32px;object-fit:contain" />
+      <div class="logo-text">
+        <span class="brand" data-brand="org_name">Organisation</span>
+        <span class="tagline" data-brand="portal_tagline">Insights Portal</span>
+      </div>
+    </a>
+    <div class="nav-right">
+      <a href="/dashboard.html" class="nav-link">← Dashboard</a>
+      <div class="nav-user"><div class="nav-avatar" id="user-initials" title="">?</div><span id="user-name"></span></div>
+      <a href="/auth/logout" class="nav-link">Sign out</a>
+    </div>
+  </header>
+
+  <div class="sub-bar">
+    <div class="breadcrumb"><a href="/dashboard.html">Dashboard</a><i>/</i><span>Admin</span></div>
+  </div>
+
+  <main>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab('reports',this)">Reports</button>
+      <button class="tab-btn" onclick="showTab('groups',this)">Groups</button>
+      <button class="tab-btn" onclick="showTab('users',this)">Users</button>
+      <button class="tab-btn" onclick="showTab('access',this)">Access Rules</button>
+      <button class="tab-btn" onclick="showTab('settings',this)">Branding</button>
+    </div>
+
+    <!-- ══ REPORTS ══ -->
+    <div class="tab-panel active" id="tab-reports">
+      <div class="section-card">
+        <div class="section-header">
+          <div><h3>Available reports</h3><p>Set one or more RLS role names (comma-separated) to filter data per user. Leave blank for no RLS.</p></div>
+        </div>
+        <div id="added-reports-list"><div style="padding:2rem;text-align:center"><div class="spinner"></div></div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header">
+          <div><h3>Browse Power BI</h3><p>Find reports from workspaces your service principal has access to.</p></div>
+          <button class="btn btn-primary btn-sm" onclick="syncWorkspaces()">↻ Sync workspaces</button>
+        </div>
+        <div class="section-body" id="pbi-browser"><p style="color:var(--muted);font-size:0.82rem">Click "Sync workspaces" to browse your Power BI content.</p></div>
+      </div>
+    </div>
+
+    <!-- ══ GROUPS ══ -->
+    <div class="tab-panel" id="tab-groups">
+      <div class="section-card">
+        <div class="section-header">
+          <div><h3>Groups</h3><p>Assign reports to a group, then add users to that group.</p></div>
+          <button class="btn btn-primary btn-sm" onclick="showCreateGroup()">+ New group</button>
+        </div>
+        <div id="create-group-form" style="display:none;padding:1rem 1.25rem;border-bottom:1px solid var(--border-light);background:#fafcff">
+          <div class="form-row" style="max-width:500px">
+            <div class="form-group" style="flex:1"><label>Group name</label><input type="text" id="new-group-name" placeholder="e.g. Finance Team" /></div>
+            <div class="form-group" style="flex:2"><label>Description (optional)</label><input type="text" id="new-group-desc" placeholder="What this group is for" /></div>
+            <div style="padding-bottom:1rem;display:flex;gap:0.5rem">
+              <button class="btn btn-primary btn-sm" onclick="createGroup()">Create</button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('create-group-form').style.display='none'">Cancel</button>
+            </div>
+          </div>
+        </div>
+        <div id="groups-list"><div style="padding:2rem;text-align:center"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ══ USERS ══ -->
+    <div class="tab-panel" id="tab-users">
+      <div class="section-card">
+        <div class="section-header">
+          <div><h3>Users</h3><p>Signed-in users plus any added manually. Pending users activate on first sign-in.</p></div>
+          <button class="btn btn-primary btn-sm" onclick="showAddUser()">+ Add user</button>
+        </div>
+        <div id="add-user-form" style="display:none;padding:1rem 1.25rem;border-bottom:1px solid var(--border-light);background:#fafcff">
+          <p style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem">Search your Microsoft 365 tenant directory to find and add users.</p>
+          <div class="form-row" style="max-width:500px;align-items:flex-end">
+            <div class="form-group" style="flex:1;margin:0"><label>Search tenant</label><input type="text" id="graph-search-input" placeholder="Name or email…" oninput="graphSearch()" /></div>
+            <button class="btn btn-ghost btn-sm" style="margin-bottom:1px" onclick="document.getElementById('add-user-form').style.display='none'">Cancel</button>
+          </div>
+          <div id="graph-results" style="margin-top:0.75rem;max-width:540px"></div>
+        </div>
+        <div style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border-light);background:#fafcff">
+          <div style="position:relative;max-width:320px">
+            <span style="position:absolute;left:0.6rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.85rem;pointer-events:none">⌕</span>
+            <input type="text" id="user-search" placeholder="Search by name or email…" style="padding-left:2rem;font-size:0.82rem" oninput="filterUsers()" />
+          </div>
+        </div>
+        <div id="users-list"><div style="padding:2rem;text-align:center"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ══ ACCESS RULES ══ -->
+    <div class="tab-panel" id="tab-access">
+      <div class="section-card">
+        <div class="section-header">
+          <div><h3>Login access rules</h3><p>Control who can sign in. Block rules always take priority. Allow rules act as a whitelist.</p></div>
+        </div>
+        <div class="section-body">
+          <div style="padding:0.85rem 1rem;background:rgba(0,180,166,0.06);border:1px solid rgba(0,180,166,0.2);border-radius:8px;margin-bottom:1.25rem;font-size:0.82rem;color:var(--text-primary);line-height:1.6">
+            <strong>ℹ️ Scope of access</strong><br>
+            Only users and guests of this Microsoft 365 tenant are able to login to this portal. The rules below apply within that boundary.
+          </div>
+          <div style="margin-bottom:1.25rem;padding:1rem;background:#fff8f0;border:1px solid #ffe0b2;border-radius:8px">
+            <p style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:0.5rem">Sign-in control</p>
+            <div class="toggle-row" style="max-width:500px">
+              <div><strong>Allow new sign-ins</strong><br><span>If off, only users already in the Users list can log in. New accounts will be denied.</span></div>
+              <label class="toggle" style="flex-shrink:0;margin-left:1rem"><input type="checkbox" id="s-allow_new_signins" onchange="saveSigninSetting()" /><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:flex-end;margin-bottom:1.25rem;flex-wrap:wrap">
+            <div class="form-group" style="margin:0;min-width:180px"><label>Rule type</label>
+              <select id="rule-type">
+                <option value="allow_domain">Allow domain</option>
+                <option value="block_domain">Block domain</option>
+                <option value="allow_email">Allow email</option>
+                <option value="block_email">Block email</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;flex:1;min-width:200px"><label>Value</label>
+              <input type="text" id="rule-value" placeholder="e.g. contoso.com or user@example.com" />
+            </div>
+            <button class="btn btn-primary" style="margin-bottom:1px" onclick="addRule()">Add rule</button>
+          </div>
+          <div id="access-rules-list"><div class="spinner" style="margin:1.5rem auto"></div></div>
+          <div style="margin-top:1.25rem;padding:0.85rem 1rem;background:#f8fafc;border-radius:8px;font-size:0.78rem;color:var(--text-secondary);line-height:1.8">
+            <strong style="color:var(--text-primary);display:block;margin-bottom:0.25rem">How rules work</strong>
+            <strong>Allow domain/email</strong> — if any allow rules exist, only listed users or domains can log in.<br>
+            <strong>Block domain/email</strong> — always applied, even if the user matches an allow rule.<br>
+            If no rules are configured, any user who can authenticate with this Microsoft 365 tenant can access the portal.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BRANDING ══ -->
+    <div class="tab-panel" id="tab-settings">
+      <div class="section-card">
+        <div class="section-header">
+          <div><h3>Portal branding</h3><p>Customise the name, colours, logo and footer. Changes take effect on page refresh.</p></div>
+          <button class="btn btn-primary btn-sm" onclick="saveBranding()">Save changes</button>
+        </div>
+        <div class="section-body" style="max-width:640px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="form-group"><label>Organisation name</label><input type="text" id="s-org_name" placeholder="Organisation" /></div>
+            <div class="form-group"><label>Portal title</label><input type="text" id="s-portal_title" placeholder="Insights Portal" /></div>
+          </div>
+          <div class="form-group"><label>Tagline</label><input type="text" id="s-portal_tagline" placeholder="Insights Portal" /></div>
+          <div class="form-group">
+            <label>Logo URL <span style="font-weight:400;color:var(--text-secondary)">(publicly accessible image — leave blank for Power BI logo)</span></label>
+            <input type="text" id="s-logo_url" placeholder="https://your-org.com/logo.png" />
+          </div>
+
+          <!-- Colour settings with clear explanations -->
+          <p style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:0.75rem;margin-top:0.25rem">Colours</p>
+          <div style="padding:0.75rem;background:#f8fafc;border-radius:8px;margin-bottom:1rem;font-size:0.75rem;color:var(--text-secondary);line-height:1.7">
+            <strong style="color:var(--text-primary)">Accent</strong> — buttons, active states, highlights, the connected indicator.<br>
+            <strong style="color:var(--text-primary)">Navigation background</strong> — the top nav bar, sub-bar, and report sidebar.<br>
+            <strong style="color:var(--text-primary)">Page text</strong> — headings and body text on white page areas. Darken if you lighten the page background.<br>
+            <strong style="color:var(--text-primary)">Muted text</strong> — labels, table headers, secondary information. Should be lighter than page text.
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="form-group">
+              <label>Accent colour</label>
+              <div class="colour-row"><input type="color" id="s-primary_colour-picker" /><input type="text" id="s-primary_colour" placeholder="#00b4a6" /></div>
+            </div>
+            <div class="form-group">
+              <label>Navigation background</label>
+              <div class="colour-row"><input type="color" id="s-secondary_colour-picker" /><input type="text" id="s-secondary_colour" placeholder="#0f1e36" /></div>
+            </div>
+            <div class="form-group">
+              <label>Page text colour</label>
+              <div class="colour-row"><input type="color" id="s-text_primary-picker" /><input type="text" id="s-text_primary" placeholder="#0f1e36" /></div>
+            </div>
+            <div class="form-group">
+              <label>Muted text colour</label>
+              <div class="colour-row"><input type="color" id="s-text_secondary-picker" /><input type="text" id="s-text_secondary" placeholder="#8a9ab5" /></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Contact email <span style="font-weight:400;color:var(--text-secondary)">(shown on the access denied page)</span></label>
+            <input type="text" id="s-contact_email" placeholder="admin@yourorg.com" />
+          </div>
+          <div class="form-group">
+            <label>Footer left text <span style="font-weight:400;color:var(--text-secondary)">(leave blank for the default NFP Power Platform Library link)</span></label>
+            <input type="text" id="s-footer_left" placeholder="e.g. © 2025 Your Organisation" />
+          </div>
+
+          <!-- Preview -->
+          <div style="margin-top:0.5rem;padding:1rem;background:#f4f6f9;border-radius:8px;">
+            <p style="font-size:0.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem">Preview</p>
+            <div id="branding-preview" style="display:flex;align-items:center;gap:0.75rem;background:#0f1e36;padding:0.75rem 1rem;border-radius:8px">
+              <div id="preview-logo-mark" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pvg0" x1="46.6667" y1="0" x2="88.8653" y2="89.4466" gradientUnits="userSpaceOnUse"><stop stop-color="#E6AD10"/><stop offset="1" stop-color="#C87E0E"/></linearGradient><linearGradient id="pvg1" x1="31.9974" y1="24" x2="67.4859" y2="92.8262" gradientUnits="userSpaceOnUse"><stop stop-color="#F6D751"/><stop offset="1" stop-color="#E6AD10"/></linearGradient><linearGradient id="pvg2" x1="11.9974" y1="48" x2="31.6083" y2="94.4775" gradientUnits="userSpaceOnUse"><stop stop-color="#F9E589"/><stop offset="1" stop-color="#F6D751"/></linearGradient><clipPath id="pvc0"><rect width="96" height="96" fill="white"/></clipPath></defs><g clip-path="url(#pvc0)"><mask id="pvm0" mask-type="alpha" maskUnits="userSpaceOnUse" x="12" y="0" width="72" height="96"><path d="M52 4C52 1.79086 53.7909 0 56 0H80C82.2091 0 84 1.79086 84 4V92C84 94.2091 82.2091 96 80 96H16C13.7909 96 12 94.2091 12 92V52C12 49.7909 13.7909 48 16 48H32.0001V28C32.0001 25.7909 33.791 24 36.0001 24H52V4Z" fill="white"/></mask><g mask="url(#pvm0)"><path d="M84 0L84 96H52L52 0H84Z" fill="url(#pvg0)"/><path d="M64 28V96H32V24H60C62.2091 24 64 25.7909 64 28Z" fill="url(#pvg1)"/><path d="M12 48V96H44V52C44 49.7909 42.2091 48 40 48H12Z" fill="url(#pvg2)"/></g></g></svg>
+              </div>
+              <img id="preview-logo-img" src="" style="display:none;height:32px;border-radius:4px;object-fit:contain" />
+              <div>
+                <div id="preview-org" style="font-size:0.88rem;font-weight:600;color:white;font-family:'Sora',sans-serif">Organisation</div>
+                <div id="preview-tagline" style="font-size:0.65rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.05em;font-family:'Sora',sans-serif">Insights Portal</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span id="footer-left">Built for the <a href="https://github.com/MB-Motive/NFP-Power-Platform-Library" target="_blank">NFP Power Platform Library</a></span>
+    <span class="footer-sep">·</span>
+    Powered by <a href="https://powerbi.microsoft.com" target="_blank">Power BI Embedded</a>
+  </footer>
+  <div id="toast"></div>
+
+  <script>
+    // ── State ─────────────────────────────────────────────────
+    let allReports=[], allGroups=[], allUsers=[], currentUser=null, db_settings=null;
+    let expandedGroups=new Set(), expandedUsers=new Set();
+
+    async function init() {
+      const meRes=await fetch('/api/me');
+      if(meRes.status===401){location.href='/login.html';return;}
+      currentUser=await meRes.json();
+      if(!currentUser.isAdmin){location.href='/dashboard.html';return;}
+      const av=document.getElementById('user-initials');
+      av.textContent=initials(currentUser.displayName||currentUser.email);
+      av.title=currentUser.email;
+      document.getElementById('user-name').textContent=currentUser.displayName||currentUser.email;
+      await Promise.all([loadReports(),loadGroups(),loadUsers(),loadAccessRules(),loadBranding()]);
+    }
+
+    function showTab(name,btn){
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('tab-'+name).classList.add('active');
+      if(btn)btn.classList.add('active');
+    }
+
+    // ── Reports ───────────────────────────────────────────────
+    async function loadReports(){const res=await api('GET','/api/admin/reports');allReports=await res.json();renderAddedReports();}
+
+    function renderAddedReports(){
+      const el=document.getElementById('added-reports-list');
+      if(!allReports.length){el.innerHTML='<div class="empty-state"><p>No reports added yet. Browse Power BI below to add some.</p></div>';return;}
+      el.innerHTML=`<table><thead><tr><th>Report</th><th>Type</th><th>Workspace</th><th>RLS Role</th><th></th></tr></thead><tbody>
+        ${allReports.map(r=>{
+          const isPag=r.report_type==='PaginatedReport';
+          return `<tr>
+            <td><strong>${escHtml(r.report_name)}</strong></td>
+            <td>${isPag?'<span class="badge" style="background:#eff2ff;color:#5c7cfa;border:1px solid #c5d0fa">Paginated</span>':'<span class="badge badge-navy">Standard</span>'}</td>
+            <td><span class="badge badge-navy">${escHtml(r.workspace_name||'')}</span></td>
+            <td>
+              <div class="role-input">
+                <input type="text" id="role-${r.id}" value="${escHtml(r.role_name||'')}" placeholder="No RLS — comma-separate multiple" style="max-width:220px;font-size:0.78rem" />
+                <button class="btn btn-ghost btn-sm" onclick="saveRole(${r.id})">Save</button>
+                ${r.role_name?'<span class="role-tag">RLS on</span>':''}
+              </div>
+              ${r.report_type==='PaginatedReport'?'':
+                `<div id="ds-row-content-${r.id}" style="display:none">
+                  <div class="display-settings">
+                    <p style="font-size:0.72rem;font-weight:600;color:var(--text-primary);margin-bottom:0.25rem">DISPLAY SETTINGS</p>
+                    <p style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:0.75rem">Controls how this report appears when embedded.</p>
+                    <div class="display-settings-grid">
+                      <div class="toggle-row">
+                        <div><strong>Filter pane</strong><br><span>Show the filters panel</span></div>
+                        <label class="toggle"><input type="checkbox" id="ds-filters-${r.id}" ${r.show_filters?'checked':''} onchange="saveDisplaySettings(${r.id})" /><span class="toggle-slider"></span></label>
+                      </div>
+                      <div class="toggle-row">
+                        <div><strong>Page navigation</strong><br><span>Show page tabs</span></div>
+                        <label class="toggle"><input type="checkbox" id="ds-pagenav-${r.id}" ${r.show_page_nav!==0?'checked':''} onchange="saveDisplaySettings(${r.id})" /><span class="toggle-slider"></span></label>
+                      </div>
+                      <div class="toggle-row">
+                        <div><strong>Mobile layout</strong><br><span>Use portrait mobile view</span></div>
+                        <label class="toggle"><input type="checkbox" id="ds-mobile-${r.id}" ${r.mobile_layout?'checked':''} onchange="saveDisplaySettings(${r.id})" /><span class="toggle-slider"></span></label>
+                      </div>
+                      <div class="toggle-row">
+                        <div><strong>Transparent background</strong><br><span>Blend with portal background</span></div>
+                        <label class="toggle"><input type="checkbox" id="ds-bg-${r.id}" ${r.background==='transparent'?'checked':''} onchange="saveDisplaySettings(${r.id})" /><span class="toggle-slider"></span></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>`
+              }
+            </td>
+            <td style="text-align:right;display:flex;gap:0.4rem;justify-content:flex-end;align-items:flex-start;padding-top:0.75rem">
+              ${r.report_type==='PaginatedReport'?'':`<button class="btn btn-ghost btn-sm" onclick="toggleDisplaySettings(${r.id})">⚙ Display</button>`}
+              <button class="btn btn-danger btn-sm" onclick="removeReport(${r.id},'${escHtml(r.report_name)}')">Remove</button>
+            </td>
+          </tr>`;
+        }).join('')}</tbody></table>`;
+    }
+
+    function toggleDisplaySettings(id){
+      const el=document.getElementById('ds-row-content-'+id);
+      el.style.display=el.style.display==='none'?'':'none';
+    }
+
+    async function saveRole(id){
+      const val=document.getElementById('role-'+id).value.trim();
+      await api('PATCH',`/api/admin/reports/${id}`,{role_name:val});
+      toast(val?`RLS role set to "${val}"`:'RLS role cleared');
+      await loadReports();
+    }
+
+    async function saveDisplaySettings(id){
+      await api('PATCH',`/api/admin/reports/${id}`,{
+        show_filters:  document.getElementById('ds-filters-'+id)?.checked?1:0,
+        show_page_nav: document.getElementById('ds-pagenav-'+id)?.checked?1:0,
+        mobile_layout: document.getElementById('ds-mobile-'+id)?.checked?1:0,
+        background:    document.getElementById('ds-bg-'+id)?.checked?'transparent':'default',
+      });
+      toast('Display settings saved');
+    }
+
+    async function removeReport(id,name){if(!confirm(`Remove "${name}"?`))return;await api('DELETE',`/api/admin/reports/${id}`);toast('Report removed');await loadReports();await loadGroups();}
+
+    async function syncWorkspaces(){
+      const el=document.getElementById('pbi-browser');
+      el.innerHTML='<div style="padding:1.5rem;text-align:center"><div class="spinner"></div></div>';
+      try{
+        const ws=await (await api('GET','/api/admin/pbi/workspaces')).json();
+        if(!ws.length){el.innerHTML='<p style="color:var(--muted);padding:1rem">No workspaces found. Ensure the service principal has been added to each workspace.</p>';return;}
+        el.innerHTML=ws.map(w=>`<div class="workspace-item"><div class="workspace-header" onclick="toggleWorkspace(this,'${w.id}','${escHtml(w.name)}')"><span class="workspace-toggle">▶</span><span>📁 ${escHtml(w.name)}</span></div><div class="workspace-reports" id="ws-${w.id}"></div></div>`).join('');
+      }catch(err){el.innerHTML=`<p style="color:var(--danger);padding:1rem">${err.message}</p>`;}
+    }
+
+    async function toggleWorkspace(header,wsId,wsName){
+      const toggle=header.querySelector('.workspace-toggle');
+      const rEl=document.getElementById('ws-'+wsId);
+      const open=toggle.classList.toggle('open');
+      rEl.classList.toggle('open',open);
+      if(open&&rEl.dataset.loaded!=='1'){
+        rEl.dataset.loaded='1';
+        rEl.innerHTML='<p style="color:var(--muted);font-size:0.78rem;padding:0.4rem 0">Loading…</p>';
+        try{
+          const reports=await (await api('GET',`/api/admin/pbi/workspaces/${wsId}/reports`)).json();
+          if(!reports.length){rEl.innerHTML='<p style="color:var(--muted);font-size:0.78rem;padding:0.4rem 0">No reports in this workspace.</p>';return;}
+          rEl.innerHTML=reports.map(r=>{
+            const added=allReports.some(ar=>ar.report_id===r.id);
+            const isPag=r.reportType==='PaginatedReport';
+            const icon=isPag?'📄':'📊';
+            const typeBadge=isPag?'<span class="role-tag" style="background:#eff2ff;color:#5c7cfa;border-color:#c5d0fa">Paginated</span>':'';
+            return `<div class="pbi-report-row ${added?'added':''}" id="pbi-row-${r.id}">
+              <span>${icon} ${escHtml(r.name)} ${typeBadge}</span>
+              ${added?'<span class="badge badge-teal">Added</span>':`<button class="btn btn-primary btn-sm" onclick="addReport('${r.id}','${escHtml(r.name)}','${wsId}','${escHtml(wsName)}','${escHtml(r.embedUrl||'')}','${escHtml(r.datasetId||'')}','${r.reportType||'PowerBIReport'}')">+ Add</button>`}
+            </div>`;
+          }).join('');
+        }catch(err){rEl.innerHTML=`<p style="color:var(--danger);font-size:0.78rem">${err.message}</p>`;}
+      }
+    }
+
+    async function addReport(rId,rName,wsId,wsName,eUrl,dsId,rType){
+      await api('POST','/api/admin/reports',{reportId:rId,reportName:rName,workspaceId:wsId,workspaceName:wsName,embedUrl:eUrl,datasetId:dsId,reportType:rType});
+      toast(`"${rName}" added`); await loadReports();
+      const row=document.getElementById('pbi-row-'+rId);
+      if(row){row.classList.add('added');row.innerHTML=`<span>${rType==='PaginatedReport'?'📄':'📊'} ${escHtml(rName)}</span><span class="badge badge-teal">Added</span>`;}
+    }
+
+    // ── Groups ─────────────────────────────────────────────────
+    async function loadGroups(){const res=await api('GET','/api/admin/groups');allGroups=await res.json();renderGroups();}
+
+    function renderGroups(){
+      const el=document.getElementById('groups-list');
+      if(!allGroups.length){el.innerHTML='<div class="empty-state"><p>No groups yet. Create one to start assigning reports.</p></div>';return;}
+      el.innerHTML=`<table><thead><tr><th>Group</th><th>Reports</th><th>Members</th><th></th></tr></thead><tbody>
+        ${allGroups.map(g=>`
+          <tr id="grow-${g.id}">
+            <td>
+              <div id="gview-${g.id}">
+                <strong>${escHtml(g.name)}</strong>
+                ${g.description?`<br><span style="font-size:0.75rem;color:var(--text-secondary)">${escHtml(g.description)}</span>`:''}
+              </div>
+              <div id="gedit-${g.id}" style="display:none" class="group-edit-inputs">
+                <input type="text" id="gname-${g.id}" value="${escHtml(g.name)}" />
+                <input type="text" id="gdesc-${g.id}" value="${escHtml(g.description||'')}" placeholder="Description (optional)" />
+              </div>
+            </td>
+            <td><span class="badge badge-navy" id="g-rcount-${g.id}">${g.report_count}</span></td>
+            <td><span class="badge badge-navy" id="g-mcount-${g.id}">${g.member_count}</span></td>
+            <td style="text-align:right;display:flex;gap:0.3rem;justify-content:flex-end;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" id="gedit-btn-${g.id}" onclick="startEditGroup(${g.id})">✏ Edit</button>
+              <button class="btn btn-primary btn-sm" id="gsave-btn-${g.id}" style="display:none" onclick="saveGroup(${g.id})">Save</button>
+              <button class="btn btn-ghost btn-sm" id="gcancel-btn-${g.id}" style="display:none" onclick="cancelEditGroup(${g.id})">Cancel</button>
+              <button class="btn btn-ghost btn-sm" onclick="toggleGroupExpand(${g.id})">Manage</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteGroup(${g.id},'${escHtml(g.name)}')">Delete</button>
+            </td>
+          </tr>
+          <tr class="expand-row" id="gexp-${g.id}" style="${expandedGroups.has(g.id)?'':'display:none'}">
+            <td colspan="4"><div class="expand-content" id="gexp-content-${g.id}"><div class="spinner" style="margin:1rem auto"></div></div></td>
+          </tr>`).join('')}</tbody></table>`;
+      // Re-render any expanded groups without collapsing
+      for(const gid of expandedGroups) loadGroupDetail(gid);
+    }
+
+    function startEditGroup(gid){
+      document.getElementById('gview-'+gid).style.display='none';
+      document.getElementById('gedit-'+gid).style.display='';
+      document.getElementById('gedit-btn-'+gid).style.display='none';
+      document.getElementById('gsave-btn-'+gid).style.display='';
+      document.getElementById('gcancel-btn-'+gid).style.display='';
+      document.getElementById('gname-'+gid).focus();
+    }
+    function cancelEditGroup(gid){
+      document.getElementById('gview-'+gid).style.display='';
+      document.getElementById('gedit-'+gid).style.display='none';
+      document.getElementById('gedit-btn-'+gid).style.display='';
+      document.getElementById('gsave-btn-'+gid).style.display='none';
+      document.getElementById('gcancel-btn-'+gid).style.display='none';
+    }
+    async function saveGroup(gid){
+      const name=document.getElementById('gname-'+gid).value.trim();
+      const desc=document.getElementById('gdesc-'+gid).value.trim();
+      if(!name)return;
+      try{await api('PATCH',`/api/admin/groups/${gid}`,{name,description:desc});toast('Group updated');await loadGroups();}
+      catch(err){toast(err.message,true);}
+    }
+
+    async function toggleGroupExpand(gid){
+      const row=document.getElementById('gexp-'+gid);
+      if(expandedGroups.has(gid)){expandedGroups.delete(gid);row.style.display='none';}
+      else{expandedGroups.add(gid);row.style.display='';await loadGroupDetail(gid);}
+    }
+
+    async function loadGroupDetail(gid){
+      const [rRes,mRes]=await Promise.all([api('GET',`/api/admin/groups/${gid}/reports`),api('GET',`/api/admin/groups/${gid}/members`)]);
+      const gReps=await rRes.json(), members=await mRes.json();
+      const aReps=allReports.filter(r=>!gReps.some(gr=>gr.id===r.id));
+      const aUsers=allUsers.filter(u=>!members.some(m=>m.id===u.id));
+      // Update badges without re-rendering table
+      const rCount=document.getElementById('g-rcount-'+gid);
+      const mCount=document.getElementById('g-mcount-'+gid);
+      if(rCount)rCount.textContent=gReps.length;
+      if(mCount)mCount.textContent=members.length;
+      document.getElementById('gexp-content-'+gid).innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div>
+            <p style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:0.5rem">REPORTS</p>
+            <div class="chip-list">${gReps.map(r=>`<span class="chip" title="${r.assigned_role?'RLS: '+escHtml(r.assigned_role):'No RLS'}">${escHtml(r.report_name)}${r.assigned_role?` <span class="role-tag">${escHtml(r.assigned_role)}</span>`:''}<button class="chip-remove" onclick="removeReportFromGroup(${gid},${r.id})">×</button></span>`).join('')||'<span style="font-size:0.78rem;color:var(--muted)">None assigned</span>'}</div>
+            ${aReps.length?`<div class="inline-add">
+              <select id="gar-${gid}" onchange="refreshGroupRoleSelector(${gid})"><option value="">Add a report…</option>${aReps.map(r=>`<option value="${r.id}">${escHtml(r.report_name)}</option>`).join('')}</select>
+              <span id="garole-wrap-${gid}"></span>
+              <button class="btn btn-primary btn-sm" onclick="addReportToGroup(${gid})">Add</button>
+            </div>`:''}
+          </div>
+          <div>
+            <p style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:0.5rem">MEMBERS</p>
+            <div class="chip-list">${members.map(u=>`<span class="chip" style="flex-direction:column;align-items:flex-start;padding:0.35rem 0.65rem"><span style="display:flex;align-items:center;gap:0.3rem;width:100%">${escHtml(u.display_name||u.email)}<button class="chip-remove" onclick="removeUserFromGroup(${gid},${u.id})" style="margin-left:auto">×</button></span><span style="font-size:0.68rem;color:var(--muted)">${escHtml(u.email)}</span></span>`).join('')||'<span style="font-size:0.78rem;color:var(--muted)">No members</span>'}</div>
+            ${aUsers.length?`<div class="inline-add"><select id="gam-${gid}"><option value="">Add a member…</option>${aUsers.map(u=>`<option value="${u.id}">${escHtml(u.display_name||u.email)}</option>`).join('')}</select><button class="btn btn-primary btn-sm" onclick="addMemberToGroup(${gid})">Add</button></div>`:''}
+          </div>
+        </div>`;
+    }
+
+    async function addReportToGroup(gid){
+      const s=document.getElementById('gar-'+gid);if(!s.value)return;
+      const roleEl=document.getElementById('garole-'+gid);
+      const roleName=(roleEl?.value||roleEl?.options?.[roleEl.selectedIndex]?.value||'').trim();
+      await api('POST',`/api/admin/groups/${gid}/reports`,{reportId:s.value,roleName:roleName||undefined});
+      toast('Report assigned');
+      await loadGroupDetail(gid);
+    }
+    function refreshUserRoleSelector(uid){
+      const sel=document.getElementById('uaor-'+uid);
+      const wrap=document.getElementById('uaorole-wrap-'+uid);
+      if(!wrap||!sel?.value){if(wrap)wrap.innerHTML='';return;}
+      const rid=parseInt(sel.value);
+      const roles=getReportRoles(rid);
+      if(roles.length>0){
+        const opts=roles.map(r=>`<option value="${escHtml(r)}">${escHtml(r)}</option>`).join('');
+        wrap.innerHTML=`<select id="uaorole-${uid}" style="max-width:130px;font-size:0.78rem"><option value="">No RLS</option>${opts}</select>`;
+      } else {
+        wrap.innerHTML=''; // No roles defined — no selector needed
+      }
+    }
+    function refreshGroupRoleSelector(gid){
+      const sel=document.getElementById('gar-'+gid);
+      const wrap=document.getElementById('garole-wrap-'+gid);
+      if(!wrap||!sel?.value){if(wrap)wrap.innerHTML='';return;}
+      const rid=parseInt(sel.value);
+      const roles=getReportRoles(rid);
+      if(roles.length>0){
+        const opts=roles.map(r=>`<option value="${escHtml(r)}">${escHtml(r)}</option>`).join('');
+        wrap.innerHTML=`<select id="garole-${gid}" style="max-width:140px;font-size:0.78rem"><option value="">No RLS</option>${opts}</select>`;
+      } else {
+        wrap.innerHTML=''; // No roles defined — no selector needed
+      }
+    }
+    async function removeReportFromGroup(gid,rid){
+      await api('DELETE',`/api/admin/groups/${gid}/reports/${rid}`);
+      toast('Report removed from group');
+      await loadGroupDetail(gid);
+    }
+    async function addMemberToGroup(gid){
+      const s=document.getElementById('gam-'+gid);if(!s.value)return;
+      await api('POST',`/api/admin/groups/${gid}/members`,{userId:s.value});
+      toast('Member added');
+      await loadGroupDetail(gid);
+      await refreshUserBadges(); // update user tab badges without full reload
+    }
+    async function removeUserFromGroup(gid,uid){
+      await api('DELETE',`/api/admin/groups/${gid}/members/${uid}`);
+      toast('Member removed');
+      await loadGroupDetail(gid);
+      await refreshUserBadges();
+    }
+
+    // Refresh user data and re-render users table without collapsing expanded groups
+    async function refreshUserBadges(){
+      const res=await api('GET','/api/admin/users');allUsers=await res.json();
+      renderUsers(); // re-render users with updated counts
+    }
+
+    function showCreateGroup(){document.getElementById('create-group-form').style.display='';document.getElementById('new-group-name').focus();}
+    async function createGroup(){
+      const name=document.getElementById('new-group-name').value.trim(),desc=document.getElementById('new-group-desc').value.trim();
+      if(!name)return;
+      await api('POST','/api/admin/groups',{name,description:desc});
+      document.getElementById('create-group-form').style.display='none';
+      document.getElementById('new-group-name').value='';document.getElementById('new-group-desc').value='';
+      toast('Group created');await loadGroups();
+    }
+    async function deleteGroup(id,name){if(!confirm(`Delete group "${name}"?`))return;await api('DELETE',`/api/admin/groups/${id}`);expandedGroups.delete(id);toast('Group deleted');await loadGroups();}
+
+    // ── Users ──────────────────────────────────────────────────
+    async function loadUsers(){const res=await api('GET','/api/admin/users');allUsers=await res.json();renderUsers();}
+
+    function filterUsers(){
+      const q=(document.getElementById('user-search')?.value||'').toLowerCase().trim();
+      if(!q){renderUsers();return;}
+      const filtered=allUsers.filter(u=>(u.display_name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q));
+      renderUsersTable(filtered);
+    }
+
+    function renderUsers(){renderUsersTable(allUsers);}
+
+    function renderUsersTable(users){
+      const el=document.getElementById('users-list');
+      if(!users.length){el.innerHTML='<div class="empty-state"><p>No users found.</p></div>';return;}
+      el.innerHTML=`<table><thead><tr><th>User</th><th>Groups</th><th>Reports</th><th>Admin</th><th>Status</th><th></th></tr></thead><tbody>
+        ${users.map(u=>`
+          <tr id="urow-${u.id}">
+            <td>
+              <div style="display:flex;align-items:center;gap:0.4rem">
+                <strong>${escHtml(u.display_name||u.email)}</strong>
+                ${u.user_type==='guest'?'<span class="badge" style="background:#f0f4ff;color:#5c7cfa;border:1px solid #c5d0fa;font-size:0.62rem">Guest</span>':''}
+              </div>
+              <span style="font-size:0.75rem;color:var(--text-secondary)">${escHtml(u.email)}</span>
+            </td>
+            <td><span class="badge badge-navy">${u.group_count} group${u.group_count!==1?'s':''}</span></td>
+            <td><span class="badge badge-navy">${u.report_count} report${u.report_count!==1?'s':''}</span></td>
+            <td><label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;margin:0"><input type="checkbox" ${u.is_admin?'checked':''} ${u.is_pending?'disabled':''} onchange="toggleAdmin(${u.id},this.checked)" /><span style="font-size:0.78rem;color:var(--text-secondary)">Admin</span></label></td>
+            <td>${u.is_blocked?'<span class="badge badge-danger">Blocked</span>':u.is_pending?'<span class="badge badge-navy">Pending</span>':'<span class="badge" style="background:#f0faf8;color:#27ae60;border:1px solid #b0ead4">Active</span>'}</td>
+            <td style="text-align:right;display:flex;gap:0.3rem;justify-content:flex-end;align-items:center;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" onclick="toggleUserExpand(${u.id})">Manage</button>
+              <button class="btn btn-sm ${u.is_blocked?'btn-primary':'btn-ghost'}" onclick="toggleBlock(${u.id},${u.is_blocked?0:1})">${u.is_blocked?'Unblock':'Block'}</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteUserRow(${u.id},'${escHtml(u.display_name||u.email)}')">Delete</button>
+            </td>
+          </tr>
+          <tr class="expand-row" id="uexp-${u.id}" style="${expandedUsers.has(u.id)?'':'display:none'}">
+            <td colspan="6"><div class="expand-content" id="uexp-content-${u.id}"><div class="spinner" style="margin:1rem auto"></div></div></td>
+          </tr>`).join('')}</tbody></table>`;
+      // Re-render expanded user rows
+      for(const uid of expandedUsers) loadUserDetail(uid);
+    }
+
+    async function toggleUserExpand(uid){
+      const row=document.getElementById('uexp-'+uid);
+      if(expandedUsers.has(uid)){expandedUsers.delete(uid);row.style.display='none';}
+      else{expandedUsers.add(uid);row.style.display='';await loadUserDetail(uid);}
+    }
+
+    async function loadUserDetail(uid){
+      const el=document.getElementById('uexp-content-'+uid);
+      if(!el)return;
+      const [gRes,oRes]=await Promise.all([api('GET',`/api/admin/users/${uid}/groups`),api('GET',`/api/admin/users/${uid}/overrides`)]);
+      const uGroups=await gRes.json(),overrides=await oRes.json();
+      const notInGroups=allGroups.filter(g=>!uGroups.some(ug=>ug.id===g.id));
+      const notOverridden=allReports.filter(r=>!overrides.some(o=>o.report_id===r.id));
+      el.innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div>
+            <p style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:0.5rem">GROUP MEMBERSHIPS</p>
+            <div class="chip-list">${uGroups.map(g=>`<span class="chip">${escHtml(g.name)}<button class="chip-remove" onclick="removeFromGroup(${uid},${g.id})">×</button></span>`).join('')||'<span style="font-size:0.78rem;color:var(--muted)">Not in any groups</span>'}</div>
+            ${notInGroups.length?`<div class="inline-add"><select id="uag-${uid}"><option value="">Add to group…</option>${notInGroups.map(g=>`<option value="${g.id}">${escHtml(g.name)}</option>`).join('')}</select><button class="btn btn-primary btn-sm" onclick="addToGroup(${uid})">Add</button></div>`:''}
+          </div>
+          <div>
+            <p style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:0.25rem">INDIVIDUAL OVERRIDES</p>
+            <p style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:0.5rem">Grant or revoke specific reports, overriding group membership.</p>
+            <div class="chip-list">${overrides.map(o=>`<span class="chip ${o.granted?'override-granted':'override-revoked'}">${o.granted?'✓':'✗'} ${escHtml(o.report_name)}${o.role_name?` <span class="role-tag">${escHtml(o.role_name)}</span>`:''}<button class="chip-remove" onclick="removeOverride(${uid},${o.report_id})">×</button></span>`).join('')||'<span style="font-size:0.78rem;color:var(--muted)">No overrides</span>'}</div>
+            ${notOverridden.length?`<div class="inline-add">
+              <select id="uaor-${uid}" onchange="refreshUserRoleSelector(${uid})"><option value="">Select report…</option>${notOverridden.map(r=>`<option value="${r.id}">${escHtml(r.report_name)}</option>`).join('')}</select>
+              <select id="uaot-${uid}" style="max-width:80px"><option value="1">Grant</option><option value="0">Revoke</option></select>
+              <span id="uaorole-wrap-${uid}"></span>
+              <button class="btn btn-primary btn-sm" onclick="addOverride(${uid})">Set</button>
+            </div>`:''}
+          </div>
+        </div>`;
+    }
+
+    async function addToGroup(uid){
+      const s=document.getElementById('uag-'+uid);if(!s.value)return;
+      await api('POST',`/api/admin/groups/${s.value}/members`,{userId:uid});
+      toast('Added to group');
+      await loadUserDetail(uid); // stay open
+      await loadGroups(); // refresh group badges
+    }
+    async function removeFromGroup(uid,gid){
+      await api('DELETE',`/api/admin/groups/${gid}/members/${uid}`);
+      toast('Removed from group');
+      await loadUserDetail(uid);
+      await loadGroups();
+    }
+    async function addOverride(uid){
+      const rid=document.getElementById('uaor-'+uid).value;
+      const granted=document.getElementById('uaot-'+uid).value==='1';
+      if(!rid)return;
+      const roleEl=document.getElementById('uaorole-'+uid);
+      const roleName=(roleEl?.value||roleEl?.options?.[roleEl.selectedIndex]?.value||'').trim();
+      await api('POST',`/api/admin/users/${uid}/overrides`,{reportId:rid,granted,roleName:roleName||undefined});
+      toast('Override set');
+      await loadUserDetail(uid);
+      await refreshUserRowBadges(uid);
+    }
+    async function removeOverride(uid,rid){
+      await api('DELETE',`/api/admin/users/${uid}/overrides/${rid}`);
+      toast('Override removed');
+      await loadUserDetail(uid);
+      await refreshUserRowBadges(uid);
+    }
+    async function toggleAdmin(uid,isAdmin){try{await api('PATCH',`/api/admin/users/${uid}`,{isAdmin});toast(isAdmin?'Admin granted':'Admin removed');}catch(err){toast(err.message,true);await loadUsers();}}
+    async function toggleBlock(uid,block){await api('PATCH',`/api/admin/users/${uid}`,{isBlocked:!!block});toast(block?'User blocked':'User unblocked');await loadUsers();}
+    async function deleteUserRow(uid,name){if(!confirm(`Delete user "${name}"?`))return;await api('DELETE',`/api/admin/users/${uid}`);expandedUsers.delete(uid);toast('User deleted');await loadUsers();}
+
+    // Graph user search
+    function showAddUser(){document.getElementById('add-user-form').style.display='';document.getElementById('graph-search-input').value='';document.getElementById('graph-results').innerHTML='';document.getElementById('graph-search-input').focus();}
+    let gTimer=null;
+    async function graphSearch(){
+      const q=document.getElementById('graph-search-input').value.trim();
+      const el=document.getElementById('graph-results');
+      if(q.length<2){el.innerHTML='';return;}
+      clearTimeout(gTimer);
+      gTimer=setTimeout(async()=>{
+        el.innerHTML='<div style="font-size:0.78rem;color:var(--muted)">Searching…</div>';
+        try{
+          const res=await api('GET',`/api/admin/graph/users?q=${encodeURIComponent(q)}`);
+          const users=await res.json();
+          if(!users.length){el.innerHTML='<div style="font-size:0.78rem;color:var(--muted)">No users found.</div>';return;}
+          el.innerHTML=`<table style="font-size:0.8rem"><thead><tr><th>Name</th><th>Email</th><th>Type</th><th></th></tr></thead><tbody>
+            ${users.map(u=>{
+              const already=allUsers.some(au=>au.email.toLowerCase()===u.email.toLowerCase());
+              return `<tr><td>${escHtml(u.displayName)}</td><td style="color:var(--text-secondary)">${escHtml(u.email)}</td>
+                <td>${u.userType==='guest'?'<span class="badge" style="background:#f0f4ff;color:#5c7cfa;border:1px solid #c5d0fa">Guest</span>':'<span class="badge badge-navy">Member</span>'}</td>
+                <td style="text-align:right">${already?'<span style="font-size:0.72rem;color:var(--muted)">Already added</span>':`<button class="btn btn-primary btn-sm" onclick="addGraphUser('${escHtml(u.email)}','${escHtml(u.displayName)}')">Add</button>`}</td></tr>`;
+            }).join('')}</tbody></table>`;
+        }catch(err){el.innerHTML=`<div style="font-size:0.78rem;color:var(--danger)">${err.message}</div>`;}
+      },350);
+    }
+    async function addGraphUser(email,displayName){
+      try{await api('POST','/api/admin/users',{email,displayName});toast(`${displayName} added`);document.getElementById('add-user-form').style.display='none';await loadUsers();}
+      catch(err){toast(err.message,true);}
+    }
+
+    // ── Access Rules ───────────────────────────────────────────
+    async function loadAccessRules(){
+      renderAccessRules(await (await api('GET','/api/admin/access-rules')).json());
+      const s=db_settings||await (await api('GET','/api/admin/settings')).json();
+      const el=document.getElementById('s-allow_new_signins');
+      if(el)el.checked=s.allow_new_signins!=='0';
+    }
+    function renderAccessRules(rules){
+      const el=document.getElementById('access-rules-list');
+      if(!rules.length){el.innerHTML='<div class="empty-state"><p>No rules — all authenticated users from this tenant can log in.</p></div>';return;}
+      const labels={allow_domain:{l:'Allow domain',c:'badge-teal'},block_domain:{l:'Block domain',c:'badge-danger'},allow_email:{l:'Allow email',c:'badge-teal'},block_email:{l:'Block email',c:'badge-danger'}};
+      el.innerHTML=`<table><thead><tr><th>Type</th><th>Value</th><th></th></tr></thead><tbody>
+        ${rules.map(r=>`<tr><td><span class="badge ${labels[r.type]?.c||'badge-navy'}">${labels[r.type]?.l||r.type}</span></td><td><code style="font-size:0.82rem">${escHtml(r.value)}</code></td><td style="text-align:right"><button class="btn btn-danger btn-sm" onclick="deleteRule(${r.id})">Remove</button></td></tr>`).join('')}</tbody></table>`;
+    }
+    async function addRule(){const type=document.getElementById('rule-type').value,value=document.getElementById('rule-value').value.trim();if(!value)return;try{await api('POST','/api/admin/access-rules',{type,value});document.getElementById('rule-value').value='';toast('Rule added');await loadAccessRules();}catch(err){toast(err.message,true);}}
+    async function deleteRule(id){await api('DELETE',`/api/admin/access-rules/${id}`);toast('Rule removed');await loadAccessRules();}
+    async function saveSigninSetting(){const val=document.getElementById('s-allow_new_signins').checked?'1':'0';await api('POST','/api/admin/settings',{allow_new_signins:val});toast(val==='1'?'New sign-ins allowed':'New sign-ins blocked');}
+
+    // ── Branding ───────────────────────────────────────────────
+    async function loadBranding(){
+      const res=await api('GET','/api/admin/settings');
+      const s=await res.json();db_settings=s;
+      ['org_name','portal_title','portal_tagline','primary_colour','secondary_colour','text_primary','text_secondary','logo_url','contact_email','footer_left'].forEach(k=>{
+        const el=document.getElementById('s-'+k);if(el&&s[k])el.value=s[k];
+      });
+      // Sync all colour pickers AFTER values are populated
+      ['primary_colour','secondary_colour','text_primary','text_secondary'].forEach(k=>syncPicker(k));
+      updatePreview(s);
+    }
+
+    function syncPicker(key){
+      const text=document.getElementById('s-'+key);
+      const picker=document.getElementById('s-'+key+'-picker');
+      if(!text||!picker)return;
+      // Set picker to match current text value
+      if(text.value&&/^#[0-9a-fA-F]{6}$/.test(text.value))picker.value=text.value;
+      picker.addEventListener('input',()=>{text.value=picker.value;updatePreviewFromInputs();});
+      text.addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test(text.value))picker.value=text.value;updatePreviewFromInputs();});
+    }
+
+    function updatePreviewFromInputs(){updatePreview({org_name:document.getElementById('s-org_name').value,portal_tagline:document.getElementById('s-portal_tagline').value,secondary_colour:document.getElementById('s-secondary_colour').value,logo_url:document.getElementById('s-logo_url').value});}
+
+    function updatePreview(s){
+      if(s.org_name)document.getElementById('preview-org').textContent=s.org_name;
+      if(s.portal_tagline)document.getElementById('preview-tagline').textContent=s.portal_tagline;
+      if(s.secondary_colour)document.getElementById('branding-preview').style.background=s.secondary_colour;
+      if(s.logo_url){document.getElementById('preview-logo-img').src=s.logo_url;document.getElementById('preview-logo-img').style.display='';document.getElementById('preview-logo-mark').style.display='none';}
+      else{document.getElementById('preview-logo-img').style.display='none';document.getElementById('preview-logo-mark').style.display='';}
+    }
+
+    ['org_name','portal_tagline','logo_url'].forEach(k=>{const el=document.getElementById('s-'+k);if(el)el.addEventListener('input',updatePreviewFromInputs);});
+
+    async function saveBranding(){
+      const body={};
+      ['org_name','portal_title','portal_tagline','primary_colour','secondary_colour','text_primary','text_secondary','logo_url','contact_email','footer_left'].forEach(k=>{const el=document.getElementById('s-'+k);if(el)body[k]=el.value.trim();});
+      await api('POST','/api/admin/settings',body);
+      toast('Branding saved — refresh any open pages to see changes');
+    }
+
+    // Get available roles from a report's stored role_name (comma-separated)
+    function getReportRoles(reportId){
+      const report=allReports.find(r=>r.id===parseInt(reportId));
+      if(!report||!report.role_name)return[];
+      return report.role_name.split(',').map(r=>r.trim()).filter(Boolean);
+    }
+
+    // Build a role selector — dropdown if roles are defined, text input otherwise
+    function roleSelector(id, currentVal, placeholder){
+      // Try to get roles from currently selected report
+      const roles=getReportRoles(id)||[];
+      if(roles.length>0){
+        const opts=roles.map(r=>`<option value="${escHtml(r)}" ${currentVal===r?'selected':''}>${escHtml(r)}</option>`).join('');
+        return `<select id="${id}-role-sel" style="max-width:140px;font-size:0.78rem"><option value="">No RLS</option>${opts}</select>`;
+      }
+      return `<input type="text" id="${id}-role-sel" placeholder="${placeholder}" style="max-width:140px;font-size:0.78rem" value="${escHtml(currentVal||'')}" />`;
+    }
+
+    // Refresh the role selector when report selection changes
+    function onReportSelectChange(selectId, roleSelectorContainerId){
+      const sel=document.getElementById(selectId);
+      if(!sel)return;
+      sel.addEventListener('change',()=>{
+        const container=document.getElementById(roleSelectorContainerId);
+        if(!container)return;
+        container.innerHTML=roleSelector(parseInt(sel.value)||0,'','RLS role (optional)');
+      });
+    }
+
+    // Refresh badge counts for a single user row without re-rendering the table
+    async function refreshUserRowBadges(uid){
+      const res=await api('GET','/api/admin/users');
+      allUsers=await res.json();
+      const u=allUsers.find(x=>x.id===uid);
+      if(!u)return;
+      // Update group and report count badges in the existing row
+      const row=document.getElementById('urow-'+uid);
+      if(!row)return;
+      const badges=row.querySelectorAll('td:nth-child(2) .badge, td:nth-child(3) .badge');
+      if(badges[0])badges[0].textContent=`${u.group_count} group${u.group_count!==1?'s':''}`;
+      if(badges[1])badges[1].textContent=`${u.report_count} report${u.report_count!==1?'s':''}`;
+    }
+
+    // ── Helpers ────────────────────────────────────────────────
+    async function api(method,url,body){
+      const opts={method,headers:{'Content-Type':'application/json'}};
+      if(body)opts.body=JSON.stringify(body);
+      const res=await fetch(url,opts);
+      if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||`HTTP ${res.status}`);}
+      return res;
+    }
+    function toast(msg,isError=false){const el=document.getElementById('toast');el.textContent=msg;el.className='show'+(isError?' error':'');setTimeout(()=>el.className='',2500);}
+    function initials(n){const parts=n.trim().split(/\s+/);if(parts.length>=2)return(parts[0][0]+parts[parts.length-1][0]).toUpperCase();return n.split('@')[0].slice(0,2).toUpperCase();}
+    function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
+
+    init().catch(console.error);
+  </script>
+</body>
+</html>

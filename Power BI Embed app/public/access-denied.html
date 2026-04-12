@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Access Denied – Insights Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/branding.js" defer></script>
+  <style>
+    body { background: var(--navy); align-items: center; justify-content: center; }
+    .card { background: var(--white); border-radius: 16px; padding: 3rem 2.5rem; width: 100%; max-width: 440px; box-shadow: 0 24px 64px rgba(0,0,0,0.3); animation: fadeUp 0.4s ease both; text-align: center; }
+    .icon { width: 64px; height: 64px; border-radius: 50%; background: #fff0f0; border: 2px solid #fcd0d0; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.5rem; }
+    h1 { font-family: var(--font-disp); font-size: 1.6rem; font-weight: 400; color: var(--navy); margin-bottom: 0.75rem; }
+    p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+    .contact-block { background: #f4f6f9; border-radius: 8px; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.82rem; color: var(--navy); display: none; }
+    .contact-block.visible { display: block; }
+    .contact-block a { color: var(--teal-dim); text-decoration: none; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🔒</div>
+    <h1>Access denied</h1>
+    <p>Your account is not authorised to access the <strong id="portal-name">Insights Portal</strong>. This portal is restricted to approved users only.</p>
+    <div class="contact-block" id="contact-block">To request access, contact your administrator at <a href="#" id="contact-link"></a>.</div>
+    <a href="/auth/logout" class="btn btn-secondary" style="width:100%;justify-content:center">Sign out and try a different account</a>
+  </div>
+  <script>
+    fetch('/api/branding').then(r=>r.json()).then(b=>{
+      if(b.portal_title) document.getElementById('portal-name').textContent=b.portal_title;
+      if(b.contact_email){document.getElementById('contact-link').href='mailto:'+b.contact_email;document.getElementById('contact-link').textContent=b.contact_email;document.getElementById('contact-block').classList.add('visible');}
+    }).catch(()=>{});
+  </script>
+</body>
+</html>

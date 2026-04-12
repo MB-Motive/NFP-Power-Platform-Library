@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report – Insights Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/branding.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.23.10/dist/powerbi.min.js"></script>
+  <style>
+    body { overflow: hidden; }
+
+    /* ── Layout: sidebar + content ── */
+    .report-layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px;
+      background: var(--navy-mid);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: width 0.25s ease, opacity 0.25s ease;
+      overflow: hidden;
+    }
+    .sidebar.collapsed { width: 0; opacity: 0; pointer-events: none; }
+
+    .sidebar-header {
+      padding: 1rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .sidebar-header p {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .sidebar-search {
+      position: relative;
+    }
+    .sidebar-search input {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--white);
+      font-size: 0.78rem;
+      padding: 0.4rem 0.6rem 0.4rem 1.75rem;
+      border-radius: 6px;
+    }
+    .sidebar-search input::placeholder { color: var(--muted); }
+    .sidebar-search input:focus { border-color: var(--teal); background: rgba(255,255,255,0.1); }
+    .sidebar-search .s-icon { position:absolute; left:0.55rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:0.8rem; pointer-events:none; }
+
+    .sidebar-list {
+      overflow-y: auto;
+      flex: 1;
+      padding: 0.5rem 0;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 1.25rem;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
+      text-decoration: none;
+      min-width: 0;
+    }
+    .sidebar-item:hover { background: rgba(255,255,255,0.06); }
+    .sidebar-item.active { background: rgba(0,180,166,0.12); border-left-color: var(--teal); }
+
+    .sidebar-item-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .sidebar-item-icon.standard { background: rgba(0,180,166,0.15); }
+    .sidebar-item-icon.paginated { background: rgba(92,124,250,0.15); }
+
+    .sidebar-item-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .sidebar-item-name {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .sidebar-item-ws {
+      font-size: 0.68rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-empty {
+      padding: 1.5rem 1.25rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── Toggle button ── */
+    .sidebar-toggle {
+      position: absolute;
+      left: 260px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      width: 20px;
+      height: 48px;
+      background: var(--navy-soft);
+      border: 1px solid var(--border);
+      border-left: none;
+      border-radius: 0 6px 6px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.7rem;
+      transition: left 0.25s ease;
+    }
+    .sidebar-toggle:hover { background: var(--navy); color: var(--white); }
+    .sidebar-toggle.collapsed { left: 0; border-left: 1px solid var(--border); border-radius: 0 6px 6px 0; }
+
+    /* ── Report content area ── */
+    .report-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .report-subbar {
+      background: var(--navy-mid);
+      padding: 0 1.25rem;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .breadcrumb { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--muted); }
+    .breadcrumb span { color: var(--white); font-weight: 500; }
+    .breadcrumb i { font-style: normal; opacity: 0.4; }
+    .breadcrumb a { color: var(--muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--white); }
+
+    /* ── Connected dot ── */
+    .connected-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ccc;
+      flex-shrink: 0;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .connected-dot.live {
+      background: #2ecc71;
+      box-shadow: 0 0 0 3px rgba(46,204,113,0.2);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    .connected-dot.error { background: var(--danger); }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
+      50% { box-shadow: 0 0 0 5px rgba(46,204,113,0.05); }
+    }
+
+    /* ── Embed wrapper ── */
+    .embed-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #embed-container { width: 100%; height: 100%; border: none; }
+
+    /* ── Loading overlay ── */
+    #loading-overlay {
+      position: absolute; inset: 0;
+      background: var(--white);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1rem;
+      transition: opacity 0.3s;
+      z-index: 10;
+    }
+    #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    #loading-overlay p { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Error panel ── */
+    #error-panel {
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1rem; padding: 3rem; text-align: center;
+      position: absolute; inset: 0; background: var(--white);
+      z-index: 5;
+    }
+    #error-panel.visible { display: flex; }
+    .error-icon { width:48px;height:48px;border-radius:50%;background:#fff0f0;border:2px solid #fcd0d0;display:flex;align-items:center;justify-content:center;font-size:1.3rem; }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .sidebar { position: absolute; left: 0; top: 0; bottom: 0; z-index: 30; width: 280px; }
+      .sidebar.collapsed { width: 0; }
+      .sidebar-toggle { display: none; }
+      .mobile-toggle { display: flex !important; }
+    }
+
+    .mobile-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--white);
+      font-size: 1rem;
+    }
+
+    footer { flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Top nav ── -->
+  <header>
+    <a class="logo" href="/dashboard.html">
+      <div class="logo-mark" style="background:transparent;padding:0" data-brand-logo-mark>
+        <svg width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><filter id="rf0"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="0.4" result="effect1_foregroundBlur"/></filter><filter id="rf1"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="4" result="effect1_foregroundBlur"/></filter><linearGradient id="rg0" x1="46.6667" y1="0" x2="88.8653" y2="89.4466" gradientUnits="userSpaceOnUse"><stop stop-color="#E6AD10"/><stop offset="1" stop-color="#C87E0E"/></linearGradient><linearGradient id="rg1" x1="31.9974" y1="24" x2="67.4859" y2="92.8262" gradientUnits="userSpaceOnUse"><stop stop-color="#F6D751"/><stop offset="1" stop-color="#E6AD10"/></linearGradient><linearGradient id="rg2" x1="11.9974" y1="48" x2="31.6083" y2="94.4775" gradientUnits="userSpaceOnUse"><stop stop-color="#F9E589"/><stop offset="1" stop-color="#F6D751"/></linearGradient><clipPath id="rc0"><rect width="96" height="96" fill="white"/></clipPath></defs><g clip-path="url(#rc0)"><mask id="rm0" mask-type="alpha" maskUnits="userSpaceOnUse" x="12" y="0" width="72" height="96"><path d="M52 4C52 1.79086 53.7909 0 56 0H80C82.2091 0 84 1.79086 84 4V92C84 94.2091 82.2091 96 80 96H16C13.7909 96 12 94.2091 12 92V52C12 49.7909 13.7909 48 16 48H32.0001V28C32.0001 25.7909 33.791 24 36.0001 24H52V4Z" fill="white"/></mask><g mask="url(#rm0)"><path d="M84 0L84 96H52L52 0H84Z" fill="url(#rg0)"/><g filter="url(#rf0)"><path d="M64 28.4V96.4H32V24.4H60C62.2091 24.4 64 26.1909 64 28.4Z" fill="black" fill-opacity="0.2"/></g><g filter="url(#rf1)"><path d="M64 30V98H32V26H60C62.2091 26 64 27.7909 64 30Z" fill="black" fill-opacity="0.18"/></g><path d="M64 28V96H32V24H60C62.2091 24 64 25.7909 64 28Z" fill="url(#rg1)"/><path d="M12 48V96H44V52C44 49.7909 42.2091 48 40 48H12Z" fill="url(#rg2)"/></g></g></svg>
+      </div>
+      <img data-brand-logo src="" style="display:none;height:32px;object-fit:contain" />
+      <div class="logo-text">
+        <span class="brand" data-brand="org_name">Organisation</span>
+        <span class="tagline" data-brand="portal_tagline">Insights Portal</span>
+      </div>
+    </a>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="user-initials" title="">?</div>
+        <span id="user-name"></span>
+      </div>
+      <a href="/auth/logout" class="nav-link">Sign out</a>
+    </div>
+  </header>
+
+  <!-- ── Main layout: sidebar + report ── -->
+  <div class="report-layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <p>Reports</p>
+        <div class="sidebar-search">
+          <span class="s-icon">⌕</span>
+          <input type="text" id="sidebar-search" placeholder="Search…" oninput="filterSidebar()" />
+        </div>
+      </div>
+      <div class="sidebar-list" id="sidebar-list">
+        <div class="sidebar-empty">Loading…</div>
+      </div>
+    </nav>
+
+    <!-- Sidebar toggle (desktop) -->
+    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">›</button>
+
+    <!-- Report content -->
+    <div class="report-content">
+
+      <!-- Sub-bar -->
+      <div class="report-subbar">
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+          <div class="breadcrumb">
+            <a href="/dashboard.html">Dashboard</a>
+            <i>/</i>
+            <span id="report-name">Loading…</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <div class="connected-dot" id="connected-dot" title="Connection status"></div>
+          <button class="btn btn-ghost btn-sm" onclick="reloadCurrent()">↻</button>
+        </div>
+      </div>
+
+      <!-- Embed area -->
+      <div class="embed-wrapper">
+        <div id="loading-overlay">
+          <div class="spinner"></div>
+          <p>Loading report…</p>
+        </div>
+        <div id="error-panel">
+          <div class="error-icon">⚠</div>
+          <strong>Could not load the report</strong>
+          <p id="error-message" style="color:var(--muted);font-size:0.8rem;max-width:400px;line-height:1.6"></p>
+          <button class="btn btn-secondary" onclick="location.href='/dashboard.html'">← Back to dashboard</button>
+        </div>
+        <div id="embed-container"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <span id="footer-left">Built for the <a href="https://github.com/MB-Motive/NFP-Power-Platform-Library" target="_blank">NFP Power Platform Library</a></span>
+    <span class="footer-sep">·</span>
+    Powered by <a href="https://powerbi.microsoft.com" target="_blank">Power BI Embedded</a>
+  </footer>
+
+  <script>
+    // ── State ──────────────────────────────────────────────────
+    const params = new URLSearchParams(window.location.search);
+    let currentReportId = parseInt(params.get('id') || '0', 10);
+    let allReports = [];
+    let currentEmbed = null;
+    let sidebarOpen = true;
+    let refreshTimer = null;
+
+    if (!currentReportId) location.href = '/dashboard.html';
+
+    // Standard report icon
+    const standardIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17V13M12 17V9M16 17V13"/></svg>`;
+    const paginatedIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="#5c7cfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>`;
+
+    // ── Init ───────────────────────────────────────────────────
+    async function init() {
+      // Load user
+      const meRes = await fetch('/api/me');
+      if (meRes.status === 401) { location.href = '/login.html'; return; }
+      const me = await meRes.json();
+      document.getElementById('user-name').textContent = me.displayName || me.email;
+      const av = document.getElementById('user-initials');
+      av.textContent = initials(me.displayName || me.email);
+      av.title = me.email;
+
+      // Load reports for sidebar
+      allReports = await (await fetch('/api/my-reports')).json();
+      renderSidebar(allReports);
+
+      // Load the report from URL
+      await loadReport(currentReportId);
+    }
+
+    // ── Sidebar ────────────────────────────────────────────────
+    function renderSidebar(reports) {
+      const list = document.getElementById('sidebar-list');
+      if (!reports.length) { list.innerHTML = '<div class="sidebar-empty">No reports available.</div>'; return; }
+      list.innerHTML = reports.map(r => {
+        const isPag = r.report_type === 'PaginatedReport';
+        return `<div class="sidebar-item ${r.id === currentReportId ? 'active' : ''}" id="si-${r.id}" onclick="switchReport(${r.id})">
+          <div class="sidebar-item-icon ${isPag?'paginated':'standard'}">${isPag?paginatedIcon:standardIcon}</div>
+          <div class="sidebar-item-text">
+            <div class="sidebar-item-name">${escHtml(r.report_name)}</div>
+            <div class="sidebar-item-ws">${escHtml(r.workspace_name||'')}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function filterSidebar() {
+      const q = document.getElementById('sidebar-search').value.toLowerCase();
+      const filtered = q ? allReports.filter(r => r.report_name.toLowerCase().includes(q) || (r.workspace_name||'').toLowerCase().includes(q)) : allReports;
+      renderSidebar(filtered);
+    }
+
+    function toggleSidebar() {
+      sidebarOpen = !sidebarOpen;
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('sidebar-toggle');
+      sidebar.classList.toggle('collapsed', !sidebarOpen);
+      toggle.classList.toggle('collapsed', !sidebarOpen);
+      toggle.textContent = sidebarOpen ? '›' : '‹';
+      toggle.style.left = sidebarOpen ? '260px' : '0';
+    }
+
+    // ── Report loading ─────────────────────────────────────────
+    function setStatus(state) {
+      document.getElementById('connected-dot').className = 'connected-dot ' + state;
+    }
+
+    function showError(msg) {
+      document.getElementById('loading-overlay').classList.add('hidden');
+      document.getElementById('error-message').textContent = msg;
+      document.getElementById('error-panel').classList.add('visible');
+      setStatus('error');
+    }
+
+    function hideError() {
+      document.getElementById('error-panel').classList.remove('visible');
+    }
+
+    async function loadReport(reportDbId) {
+      currentReportId = reportDbId;
+
+      // Update sidebar active state
+      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById('si-' + reportDbId);
+      if (activeEl) { activeEl.classList.add('active'); activeEl.scrollIntoView({ block: 'nearest' }); }
+
+      // Reset embed area
+      hideError();
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      setStatus('');
+      document.getElementById('report-name').textContent = 'Loading…';
+
+      // Clear any pending token refresh from previous report
+      if (refreshTimer) { clearTimeout(refreshTimer); refreshTimer = null; }
+
+      // Reset existing embed
+      const container = document.getElementById('embed-container');
+      if (currentEmbed) { try { window.powerbi.reset(container); } catch (_) {} currentEmbed = null; }
+
+      try {
+        const res = await fetch(`/api/embed-config/${reportDbId}`);
+        if (res.status === 401) { location.href = '/login.html'; return; }
+        if (res.status === 403) { showError('You do not have access to this report.'); return; }
+        const config = await res.json();
+        if (!res.ok) throw new Error(config.error || 'Server error');
+
+        const ds = config.displaySettings || {};
+        const models = window['powerbi-client'].models;
+
+        const embedConfig = {
+          type: 'report',
+          id: config.reportId,
+          embedUrl: config.embedUrl,
+          accessToken: config.embedToken,
+          tokenType: models.TokenType.Embed,
+          settings: {
+            panes: {
+              filters:        { visible: !!ds.showFilters },
+              pageNavigation: { visible: ds.showPageNav !== false, position: models.PageNavigationPosition.Bottom },
+            },
+            background: ds.background === 'transparent' ? models.BackgroundType.Transparent : models.BackgroundType.Default,
+            layoutType: ds.mobileLayout ? models.LayoutType.MobilePortrait : models.LayoutType.Master,
+          }
+        };
+
+        currentEmbed = window.powerbi.embed(container, embedConfig);
+
+        // For paginated reports, 'rendered' fires more reliably than 'loaded'
+        let spinnerHidden = false;
+        const spinnerTimeout = setTimeout(() => hideSpinner(reportDbId), 30000);
+
+        function hideSpinner(rid) {
+          if (spinnerHidden) return;
+          spinnerHidden = true;
+          clearTimeout(spinnerTimeout);
+          document.getElementById('loading-overlay').classList.add('hidden');
+          setStatus('live');
+          const rep = allReports.find(r => r.id === rid);
+          const name = rep ? rep.report_name : 'Report';
+          document.getElementById('report-name').textContent = name;
+          document.title = name + ' – Insights Portal';
+        }
+
+        currentEmbed.on('loaded',   () => hideSpinner(reportDbId));
+        currentEmbed.on('rendered', () => hideSpinner(reportDbId));
+        currentEmbed.on('error', e => {
+          clearTimeout(spinnerTimeout);
+          showError(e.detail?.message || 'An unexpected error occurred.');
+        });
+
+        // ── Token refresh loop ──────────────────────────────────
+        // Refresh the embed token 5 minutes before it expires
+        scheduleTokenRefresh(reportDbId, config.tokenExpiry);
+
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+
+    // Schedule a token refresh 5 minutes before expiry
+    let tokenRefreshTimer = null;
+    function scheduleTokenRefresh(reportDbId, expiryIso) {
+      clearTimeout(tokenRefreshTimer);
+      const expiry = new Date(expiryIso).getTime();
+      const refreshAt = expiry - Date.now() - (5 * 60 * 1000); // 5 min before expiry
+      if (refreshAt <= 0) return; // already expired or too close
+      tokenRefreshTimer = setTimeout(async () => {
+        try {
+          const res = await fetch();
+          if (!res.ok) return;
+          const data = await res.json();
+          if (currentEmbed) {
+            await currentEmbed.setAccessToken(data.embedToken);
+            console.log('Embed token refreshed, next expiry:', data.tokenExpiry);
+          }
+          // Schedule the next refresh
+          scheduleTokenRefresh(reportDbId, data.tokenExpiry);
+        } catch (err) {
+          console.warn('Token refresh failed:', err.message);
+        }
+      }, Math.max(refreshAt, 0));
+    }
+
+    async function switchReport(reportDbId) {
+      if (reportDbId === currentReportId) return;
+      // Update URL without page reload
+      history.pushState({ reportId: reportDbId }, '', `/report.html?id=${reportDbId}`);
+      await loadReport(reportDbId);
+    }
+
+    function reloadCurrent() { loadReport(currentReportId); }
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', e => {
+      const id = e.state?.reportId || parseInt(new URLSearchParams(location.search).get('id') || '0', 10);
+      if (id) loadReport(id);
+    });
+
+    // ── Helpers ────────────────────────────────────────────────
+    function initials(n) {
+      const parts = n.trim().split(/\s+/);
+      if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+      return n.split('@')[0].slice(0,2).toUpperCase();
+    }
+    function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    init().catch(console.error);
+  </script>
+</body>
+</html>
