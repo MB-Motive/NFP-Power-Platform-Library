@@ -1,4 +1,4 @@
-# Power BI Insights Portal
+# Power BI Embed app demo
 
 A Node.js web app demonstrating the **App Owns Data** Power BI embedding pattern, with Microsoft Entra ID authentication, group-based access control, and an admin panel for managing reports and users.
 
@@ -205,25 +205,10 @@ powerbi-embed-demo/
 
 ---
 
-## What to show clients
+## What to demo
 
 **For non-technical stakeholders:**
 Sign in, show the dashboard, click a report. Explain: *"Each user sees only the reports assigned to them. No Power BI licence required for your staff."*
 
 **For technical stakeholders:**
 Walk through `server.js`, `db.js`, and `routes/auth.js`. The Entra ID auth is ~60 lines. The Power BI embed is ~30 lines. The access control SQL in `db.js` is the centrepiece.
-
----
-
-## Production checklist
-
-- [ ] Deploy to Azure App Service (or Azure Container Apps)
-- [ ] Update `REDIRECT_URI` to the production domain
-- [ ] Set `cookie.secure = true` in `server.js` (requires HTTPS)
-- [ ] Use Azure Key Vault for secrets instead of `.env`
-- [ ] Add token refresh loop for long-running sessions (embed tokens expire after ~1 hour)
-- [ ] Add row-level security (RLS) if reports contain data that must be user-filtered
-
----
-
-*Questions? [hello@motiveconsulting.com.au](mailto:hello@motiveconsulting.com.au)*
