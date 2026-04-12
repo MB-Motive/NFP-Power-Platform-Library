@@ -1,5 +1,4 @@
-# Power BI Insights Portal – v2
-### Built by Motive Consulting
+# Power BI Insights Portal
 
 A Node.js web app demonstrating the **App Owns Data** Power BI embedding pattern, with Microsoft Entra ID authentication, group-based access control, and an admin panel for managing reports and users.
 
@@ -19,7 +18,7 @@ Browser
   │                         └─ Service Principal → Power BI REST API → Embed token
   │
   └─ /admin.html      ──→ /api/admin/* (admin-only)
-                            └─ Manage reports, groups, users, access
+                            └─ Manage reports, groups, users, access and branding
 ```
 
 ---
@@ -28,7 +27,7 @@ Browser
 
 - Node.js 18+
 - An Azure tenant (Microsoft 365 / Entra ID)
-- A Power BI workspace on Fabric capacity (F SKU) or Power BI Premium (P SKU)
+- A Power BI workspace on Fabric capacity (F SKU), Power BI Premium (P SKU) or Fabric Trial
 - A Power BI report published to that workspace
 
 ---
