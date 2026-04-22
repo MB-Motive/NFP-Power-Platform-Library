@@ -1,4 +1,11 @@
+# SQLite runtime files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+
+# dependencies
 node_modules/
+
+# env files
 .env
-data.db
-sessions.db

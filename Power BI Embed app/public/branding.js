@@ -30,6 +30,13 @@
       document.querySelectorAll('[data-brand-logo-mark]').forEach(el => { el.style.display = 'none'; });
     }
 
+    // Apply favicon — use configured URL or fall back to Power BI favicon
+    const faviconUrl = b.favicon_url || 'https://app.powerbi.com/images/PowerBI_Favicon.ico';
+    const existingFav = document.querySelector('link[rel="icon"]');
+    const favLink = existingFav || document.createElement('link');
+    favLink.rel = 'icon'; favLink.href = faviconUrl;
+    if (!existingFav) document.head.appendChild(favLink);
+
     const footerLeft = document.getElementById('footer-left');
     if (footerLeft) {
       if (b.footer_left) {

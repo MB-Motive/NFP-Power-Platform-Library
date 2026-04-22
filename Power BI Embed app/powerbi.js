@@ -6,42 +6,34 @@
 const axios = require('axios');
 
 // ── Token cache ───────────────────────────────────────────────
-let pbiToken = null, pbiExpiry = null;
-let graphToken = null, graphExpiry = null;
+// getPBIToken and getGraphToken share the same factory function.
+// Each scope gets its own cache entry.
+const tokenCache = {};
 
-async function getPBIToken() {
-  if (pbiToken && pbiExpiry && Date.now() < pbiExpiry) return pbiToken;
+async function getToken(scope) {
+  const entry = tokenCache[scope];
+  if (entry && Date.now() < entry.expiry) return entry.token;
+
   const params = new URLSearchParams({
-    grant_type: 'client_credentials',
-    client_id: process.env.CLIENT_ID,
+    grant_type:    'client_credentials',
+    client_id:     process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
-    scope: 'https://analysis.windows.net/powerbi/api/.default',
+    scope,
   });
   const r = await axios.post(
     `https://login.microsoftonline.com/${process.env.TENANT_ID}/oauth2/v2.0/token`,
-    params.toString(), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    params.toString(),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
   );
-  pbiToken = r.data.access_token;
-  pbiExpiry = Date.now() + (r.data.expires_in - 300) * 1000;
-  return pbiToken;
+  tokenCache[scope] = {
+    token:  r.data.access_token,
+    expiry: Date.now() + (r.data.expires_in - 300) * 1000,
+  };
+  return tokenCache[scope].token;
 }
 
-async function getGraphToken() {
-  if (graphToken && graphExpiry && Date.now() < graphExpiry) return graphToken;
-  const params = new URLSearchParams({
-    grant_type: 'client_credentials',
-    client_id: process.env.CLIENT_ID,
-    client_secret: process.env.CLIENT_SECRET,
-    scope: 'https://graph.microsoft.com/.default',
-  });
-  const r = await axios.post(
-    `https://login.microsoftonline.com/${process.env.TENANT_ID}/oauth2/v2.0/token`,
-    params.toString(), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-  );
-  graphToken = r.data.access_token;
-  graphExpiry = Date.now() + (r.data.expires_in - 300) * 1000;
-  return graphToken;
-}
+const getPBIToken   = () => getToken('https://analysis.windows.net/powerbi/api/.default');
+const getGraphToken = () => getToken('https://graph.microsoft.com/.default');
 
 // ── Workspace / report browsing ───────────────────────────────
 async function getWorkspaces() {
@@ -59,30 +51,26 @@ async function getReportsInWorkspace(workspaceId) {
   return r.data.value;
 }
 
-// ── Graph user search (contains-style via $search) ────────────
+// ── Graph user search ─────────────────────────────────────────
 async function searchTenantUsers(query) {
   const token = await getGraphToken();
   const r = await axios.get(
-    `https://graph.microsoft.com/v1.0/users?$search="displayName:${query}" OR "mail:${query}" OR "userPrincipalName:${query}"&$select=id,displayName,mail,userPrincipalName,userType&$top=20`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        ConsistencyLevel: 'eventual',
-      }
-    }
+    `https://graph.microsoft.com/v1.0/users` +
+    `?$search="displayName:${query}" OR "mail:${query}" OR "userPrincipalName:${query}"` +
+    `&$select=id,displayName,mail,userPrincipalName,userType&$top=20`,
+    { headers: { Authorization: `Bearer ${token}`, ConsistencyLevel: 'eventual' } }
   );
   return r.data.value.map(u => ({
-    id: u.id,
+    id:          u.id,
     displayName: u.displayName,
-    email: u.mail || u.userPrincipalName,
-    userType: u.userType === 'Guest' ? 'guest' : 'member',
+    email:       u.mail || u.userPrincipalName,
+    userType:    u.userType === 'Guest' ? 'guest' : 'member',
   }));
 }
 
-// ── Paginated report dataset ID lookup ────────────────────────
-// Paginated reports don't expose datasetId in the reports list endpoint.
-// It must be fetched from the datasources endpoint and extracted from
-// the AnalysisServices connectionDetails.database field.
+// ── Paginated report dataset ID ───────────────────────────────
+// The reports list endpoint doesn't expose datasetId for paginated reports.
+// We fetch it from the datasources endpoint and parse the SSAS database string.
 async function getPaginatedReportDatasetId(workspaceId, reportId) {
   try {
     const token = await getPBIToken();
@@ -90,10 +78,8 @@ async function getPaginatedReportDatasetId(workspaceId, reportId) {
       `https://api.powerbi.com/v1.0/myorg/groups/${workspaceId}/reports/${reportId}/datasources`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    const asSrc = r.data.value.find(d => d.datasourceType === 'AnalysisServices');
-    if (!asSrc?.connectionDetails?.database) return null;
-    // Format: "sobe_wowvirtualserver-{datasetId}"
-    const match = asSrc.connectionDetails.database.match(/sobe_wowvirtualserver-([0-9a-f-]{36})/i);
+    const src = r.data.value.find(d => d.datasourceType === 'AnalysisServices');
+    const match = src?.connectionDetails?.database?.match(/sobe_wowvirtualserver-([0-9a-f-]{36})/i);
     return match ? match[1] : null;
   } catch (err) {
     console.warn('Could not fetch paginated report datasource:', err.message);
@@ -102,7 +88,7 @@ async function getPaginatedReportDatasetId(workspaceId, reportId) {
 }
 
 // ── V2 Embed token ────────────────────────────────────────────
-async function getEmbedConfig(workspaceId, pbiReportId, datasetId, reportType, userEmail, roleName) {
+async function getEmbedConfig(workspaceId, pbiReportId, datasetId, reportType, userOid, roleName, userEmail) {
   const token = await getPBIToken();
 
   // Fetch report metadata for embedUrl
@@ -114,31 +100,24 @@ async function getEmbedConfig(workspaceId, pbiReportId, datasetId, reportType, u
 
   let effectiveDatasetId = datasetId || report.datasetId || null;
 
-  // For paginated reports, dataset ID isn't in the report metadata —
-  // fetch it from the datasources endpoint
+  // For paginated reports, dataset ID isn't in the report metadata
   if (!effectiveDatasetId && reportType === 'PaginatedReport') {
     effectiveDatasetId = await getPaginatedReportDatasetId(workspaceId, pbiReportId);
   }
 
-  // Build V2 token request
-  const tokenBody = {
-    reports: [{ id: report.id, allowEdit: false }],
-    targetWorkspaces: [{ id: workspaceId }],
-  };
+  const tokenBody = { reports: [{ id: report.id, allowEdit: false }] };
 
   if (effectiveDatasetId) {
     tokenBody.datasets = [{ id: effectiveDatasetId, xmlaPermissions: 'ReadOnly' }];
   }
 
-  // RLS identity (only for reports with a dataset)
-  if (roleName && userEmail && effectiveDatasetId) {
+  // RLS: OID as username (stable Entra identity), email as customData for USERPRINCIPALNAME() DAX
+  if (roleName && userOid && effectiveDatasetId) {
     const roles = roleName.split(',').map(r => r.trim()).filter(Boolean);
     if (roles.length > 0) {
-      tokenBody.identities = [{
-        username: userEmail,
-        roles,
-        datasets: [effectiveDatasetId],
-      }];
+      const identity = { username: userOid, roles, datasets: [effectiveDatasetId] };
+      if (userEmail) identity.customData = userEmail;
+      tokenBody.identities = [identity];
     }
   }
 
@@ -149,10 +128,10 @@ async function getEmbedConfig(workspaceId, pbiReportId, datasetId, reportType, u
   );
 
   return {
-    embedUrl: report.embedUrl,
-    embedToken: tokenRes.data.token,
-    reportId: report.id,
-    reportType: reportType || 'PowerBIReport',
+    embedUrl:    report.embedUrl,
+    embedToken:  tokenRes.data.token,
+    reportId:    report.id,
+    reportType:  reportType || 'PowerBIReport',
     tokenExpiry: tokenRes.data.expiration,
   };
 }
