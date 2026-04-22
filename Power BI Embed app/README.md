@@ -1,4 +1,4 @@
-# Power BI Insights Portal
+# Power BI 'App owns data' Portal
 
 A white-label Power BI embedded portal using the App Owns Data pattern. Built for NFP and for-purpose organisations on the [NFP Power Platform Library](https://github.com/MB-Motive/NFP-Power-Platform-Library).
 
