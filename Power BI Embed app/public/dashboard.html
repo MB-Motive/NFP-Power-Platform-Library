@@ -9,69 +9,57 @@
   <link rel="stylesheet" href="/style.css" />
   <script src="/branding.js" defer></script>
   <style>
-    main { flex: 1; padding: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
-    .page-header { animation: fadeUp 0.4s ease both; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
-    .page-header h1 { font-family: var(--font-disp); font-size: 1.75rem; font-weight: 400; color: var(--navy); }
-    .page-header h1 em { font-style: italic; color: var(--teal-dim); }
-    .page-header p { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
-
-    .filters-bar { display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; animation: fadeUp 0.4s 0.05s ease both; }
-    .search-input { position:relative; flex:1; min-width:200px; max-width:320px; }
-    .search-input input { padding-left:2rem; }
-    .search-input .search-icon { position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:0.85rem; pointer-events:none; }
-    .filter-select { font-family:var(--font-ui); font-size:0.82rem; padding:0.45rem 0.75rem; border:1px solid var(--border-light); border-radius:7px; color:var(--navy); background:var(--white); cursor:pointer; }
-
-    .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; animation: fadeUp 0.4s 0.1s ease both; }
-    .report-card { background: var(--white); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; display: flex; flex-direction: column; gap: 0.75rem; text-decoration: none; }
-    .report-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.12); border-color: var(--teal); }
-    .report-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-    .report-icon.standard { background: linear-gradient(135deg, #e8f8f7, #c8efed); }
-    .report-icon.paginated { background: linear-gradient(135deg, #e8eeff, #c8d4ff); }
-    .report-name { font-size: 0.95rem; font-weight: 600; color: var(--navy); line-height: 1.3; }
+    main { flex:1; padding:2rem; display:flex; flex-direction:column; gap:1.25rem; }
+    .page-header { display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+    .page-header h1 { font-family:var(--font-disp); font-size:1.75rem; font-weight:400; color:var(--navy); }
+    .page-header h1 em { font-style:italic; color:var(--teal-dim); }
+    .page-header p { font-size:0.82rem; color:var(--muted); margin-top:0.3rem; }
+    .filters-bar { display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; }
+    .search-wrap { position:relative; width:280px; }
+    .search-wrap input { padding-left:2rem; }
+    .search-icon { position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:0.85rem; pointer-events:none; }
+    .filter-select { font-family:var(--font-ui); font-size:0.82rem; padding:0.45rem 0.75rem; border:1px solid var(--border-light); border-radius:7px; color:var(--navy); background:var(--white); cursor:pointer; width:280px; }
+    .section-label { font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:0.75rem; }
+    .report-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+    .report-card { background:var(--white); border:1px solid var(--border-light); border-radius:12px; padding:1.5rem; box-shadow:var(--shadow); cursor:pointer; transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s; display:flex; flex-direction:column; gap:0.75rem; text-decoration:none; position:relative; }
+    .report-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.12); border-color:var(--teal); }
+    .report-icon { width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+    .report-icon.standard { background:linear-gradient(135deg,#e8f8f7,#c8efed); }
+    .report-icon.paginated { background:linear-gradient(135deg,#e8eeff,#c8d4ff); }
+    .report-name { font-size:0.95rem; font-weight:600; color:var(--navy); line-height:1.3; padding-right:1.5rem; }
     .report-meta { display:flex; align-items:center; gap:0.5rem; }
-    .report-workspace { font-size: 0.75rem; color: var(--muted); }
-    .report-type-tag { font-size:0.65rem; font-weight:500; padding:0.1rem 0.45rem; border-radius:10px; }
-    .report-type-tag.paginated { background:#eff2ff; color:#5c7cfa; border:1px solid #c5d0fa; }
-    #loading { text-align: center; padding: 4rem; }
+    .report-workspace { font-size:0.75rem; color:var(--muted); }
+    .report-type-tag { font-size:0.65rem; font-weight:500; padding:0.1rem 0.45rem; border-radius:10px; background:#eff2ff; color:#5c7cfa; border:1px solid #c5d0fa; }
+    .fav-btn { position:absolute; top:1rem; right:1rem; background:none; border:none; cursor:pointer; font-size:1.1rem; line-height:1; padding:0.2rem; opacity:0.4; transition:opacity 0.15s,transform 0.15s; }
+    .fav-btn:hover { opacity:1; transform:scale(1.2); }
+    .fav-btn.active { opacity:1; }
+    #loading { text-align:center; padding:4rem; }
     .no-results { text-align:center; padding:3rem; color:var(--muted); font-size:0.85rem; }
+    .pinned-section { margin-bottom:0.5rem; }
   </style>
 </head>
 <body>
   <header>
     <a class="logo" href="/dashboard.html">
       <div class="logo-mark" style="background:transparent;padding:0" data-brand-logo-mark>
-        <svg width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><filter id="df0"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="0.4" result="effect1_foregroundBlur"/></filter><filter id="df1"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur stdDeviation="4" result="effect1_foregroundBlur"/></filter><linearGradient id="dg0" x1="46.6667" y1="0" x2="88.8653" y2="89.4466" gradientUnits="userSpaceOnUse"><stop stop-color="#E6AD10"/><stop offset="1" stop-color="#C87E0E"/></linearGradient><linearGradient id="dg1" x1="31.9974" y1="24" x2="67.4859" y2="92.8262" gradientUnits="userSpaceOnUse"><stop stop-color="#F6D751"/><stop offset="1" stop-color="#E6AD10"/></linearGradient><linearGradient id="dg2" x1="11.9974" y1="48" x2="31.6083" y2="94.4775" gradientUnits="userSpaceOnUse"><stop stop-color="#F9E589"/><stop offset="1" stop-color="#F6D751"/></linearGradient><clipPath id="dc0"><rect width="96" height="96" fill="white"/></clipPath></defs><g clip-path="url(#dc0)"><mask id="dm0" mask-type="alpha" maskUnits="userSpaceOnUse" x="12" y="0" width="72" height="96"><path d="M52 4C52 1.79086 53.7909 0 56 0H80C82.2091 0 84 1.79086 84 4V92C84 94.2091 82.2091 96 80 96H16C13.7909 96 12 94.2091 12 92V52C12 49.7909 13.7909 48 16 48H32.0001V28C32.0001 25.7909 33.791 24 36.0001 24H52V4Z" fill="white"/></mask><g mask="url(#dm0)"><path d="M84 0L84 96H52L52 0H84Z" fill="url(#dg0)"/><g filter="url(#df0)"><path d="M64 28.4V96.4H32V24.4H60C62.2091 24.4 64 26.1909 64 28.4Z" fill="black" fill-opacity="0.2"/></g><g filter="url(#df1)"><path d="M64 30V98H32V26H60C62.2091 26 64 27.7909 64 30Z" fill="black" fill-opacity="0.18"/></g><path d="M64 28V96H32V24H60C62.2091 24 64 25.7909 64 28Z" fill="url(#dg1)"/><path d="M12 48V96H44V52C44 49.7909 42.2091 48 40 48H12Z" fill="url(#dg2)"/></g></g></svg>
+        <svg width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="dg0" x1="46.6667" y1="0" x2="88.8653" y2="89.4466" gradientUnits="userSpaceOnUse"><stop stop-color="#E6AD10"/><stop offset="1" stop-color="#C87E0E"/></linearGradient><linearGradient id="dg1" x1="31.9974" y1="24" x2="67.4859" y2="92.8262" gradientUnits="userSpaceOnUse"><stop stop-color="#F6D751"/><stop offset="1" stop-color="#E6AD10"/></linearGradient><linearGradient id="dg2" x1="11.9974" y1="48" x2="31.6083" y2="94.4775" gradientUnits="userSpaceOnUse"><stop stop-color="#F9E589"/><stop offset="1" stop-color="#F6D751"/></linearGradient><clipPath id="dc0"><rect width="96" height="96" fill="white"/></clipPath></defs><g clip-path="url(#dc0)"><mask id="dm0" mask-type="alpha" maskUnits="userSpaceOnUse" x="12" y="0" width="72" height="96"><path d="M52 4C52 1.79086 53.7909 0 56 0H80C82.2091 0 84 1.79086 84 4V92C84 94.2091 82.2091 96 80 96H16C13.7909 96 12 94.2091 12 92V52C12 49.7909 13.7909 48 16 48H32.0001V28C32.0001 25.7909 33.791 24 36.0001 24H52V4Z" fill="white"/></mask><g mask="url(#dm0)"><path d="M84 0L84 96H52L52 0H84Z" fill="url(#dg0)"/><path d="M64 28V96H32V24H60C62.2091 24 64 25.7909 64 28Z" fill="url(#dg1)"/><path d="M12 48V96H44V52C44 49.7909 42.2091 48 40 48H12Z" fill="url(#dg2)"/></g></g></svg>
       </div>
       <img data-brand-logo src="" style="display:none;height:32px;object-fit:contain" />
-      <div class="logo-text">
-        <span class="brand" data-brand="org_name">Organisation</span>
-        <span class="tagline" data-brand="portal_tagline">Insights Portal</span>
-      </div>
+      <div class="logo-text"><span class="brand" data-brand="org_name">Organisation</span><span class="tagline" data-brand="portal_tagline">Insights Portal</span></div>
     </a>
     <div class="nav-right">
       <a href="/admin.html" class="nav-link admin" id="admin-link" style="display:none">⚙ Admin</a>
-      <div class="nav-user">
-        <div class="nav-avatar" id="user-initials" title="">?</div>
-        <span id="user-name"></span>
-      </div>
+      <div class="nav-user"><div class="nav-avatar" id="user-initials" title="">?</div><span id="user-name"></span></div>
       <a href="/auth/logout" class="nav-link">Sign out</a>
     </div>
   </header>
-
-  <div class="sub-bar">
-    <div class="breadcrumb"><span>Dashboard</span></div>
-  </div>
-
+  <div class="sub-bar"><div class="breadcrumb"><span>Dashboard</span></div></div>
   <main>
     <div class="page-header">
-      <div>
-        <h1>Your <em>reports</em></h1>
-        <p id="report-count">Loading…</p>
-      </div>
+      <div><h1>Your <em>reports</em></h1><p id="report-count">Loading…</p></div>
     </div>
-
     <div class="filters-bar" id="filters-bar" style="display:none">
-      <div class="search-input">
+      <div class="search-wrap">
         <span class="search-icon">⌕</span>
         <input type="text" id="search-input" placeholder="Search reports…" oninput="filterReports()" />
       </div>
@@ -79,32 +67,43 @@
         <option value="">All workspaces</option>
       </select>
     </div>
-
     <div id="loading"><div class="spinner"></div></div>
-    <div class="report-grid" id="report-grid" style="display:none"></div>
+    <div id="pinned-section" class="pinned-section" style="display:none">
+      <p class="section-label">⭐ Pinned</p>
+      <div class="report-grid" id="pinned-grid"></div>
+    </div>
+    <div id="all-section" style="display:none">
+      <div id="all-label" class="section-label" style="display:none">All reports</div>
+      <div class="report-grid" id="report-grid"></div>
+    </div>
     <div class="no-results" id="no-results" style="display:none">No reports match your search.</div>
   </main>
+  <footer><span id="footer-left">Built for the <a href="https://github.com/MB-Motive/NFP-Power-Platform-Library" target="_blank">NFP Power Platform Library</a></span></footer>
 
-  <footer>
-    <span id="footer-left">Built for the <a href="https://github.com/MB-Motive/NFP-Power-Platform-Library" target="_blank">NFP Power Platform Library</a></span>
-    <span class="footer-sep">·</span>
-    Powered by <a href="https://powerbi.microsoft.com" target="_blank">Power BI Embedded</a>
-  </footer>
+  <div id="session-warning" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
+    <div style="background:var(--white);border-radius:12px;padding:2rem;max-width:360px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+      <div style="font-size:2rem;margin-bottom:0.75rem">⏱</div>
+      <h3 style="margin-bottom:0.5rem;color:var(--text-primary)">Session expiring soon</h3>
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1.5rem">You will be signed out in 15 minutes due to inactivity.</p>
+      <div style="display:flex;gap:0.75rem;justify-content:center">
+        <button class="btn btn-primary" onclick="extendSession()">Stay signed in</button>
+        <a href="/auth/logout" class="btn btn-ghost">Sign out now</a>
+      </div>
+    </div>
+  </div>
 
   <script>
-    let allReports = [];
+    var allReports = [];
 
-    // Standard report icon
-    const standardIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17V13M12 17V9M16 17V13"/></svg>`;
-    // Paginated report icon
-    const paginatedIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="#5c7cfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>`;
+    var standardIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17V13M12 17V9M16 17V13"/></svg>';
+    var paginatedIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="#5c7cfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>';
 
     async function init() {
-      const meRes = await fetch('/api/me');
+      var meRes = await fetch('/api/me');
       if (meRes.status === 401) { location.href = '/login.html'; return; }
-      const me = await meRes.json();
+      var me = await meRes.json();
       document.getElementById('user-name').textContent = me.displayName || me.email;
-      const av = document.getElementById('user-initials');
+      var av = document.getElementById('user-initials');
       av.textContent = initials(me.displayName || me.email);
       av.title = me.email;
       if (me.isAdmin) document.getElementById('admin-link').style.display = '';
@@ -113,63 +112,126 @@
       document.getElementById('loading').style.display = 'none';
 
       if (!allReports.length) {
-        document.getElementById('report-count').textContent = 'No reports have been assigned to you yet. Contact your administrator.';
+        document.getElementById('report-count').textContent = 'No reports have been assigned to you yet.';
         return;
       }
 
-      // Populate workspace filter
-      const workspaces = [...new Set(allReports.map(r => r.workspace_name).filter(Boolean))].sort();
-      const wsFilter = document.getElementById('workspace-filter');
-      workspaces.forEach(ws => { const o = document.createElement('option'); o.value = ws; o.textContent = ws; wsFilter.appendChild(o); });
+      var workspaces = [];
+      allReports.forEach(function(r) { if (r.workspace_name && workspaces.indexOf(r.workspace_name) === -1) workspaces.push(r.workspace_name); });
+      workspaces.sort();
+      var wsFilter = document.getElementById('workspace-filter');
+      workspaces.forEach(function(ws) { var o = document.createElement('option'); o.value = ws; o.textContent = ws; wsFilter.appendChild(o); });
 
       document.getElementById('filters-bar').style.display = '';
-      document.getElementById('report-grid').style.display = '';
+      document.getElementById('all-section').style.display = '';
       renderReports(allReports);
     }
 
+    function makeCard(r) {
+      var isPag = r.report_type === 'PaginatedReport';
+      var favStar = r.is_favourite ? '⭐' : '☆';
+      return '<a class="report-card" href="/report.html?id=' + r.id + '">'
+        + '<button class="fav-btn ' + (r.is_favourite ? 'active' : '') + '" onclick="toggleFav(event,' + r.id + ')" title="' + (r.is_favourite ? 'Unpin report' : 'Pin report') + '">' + favStar + '</button>'
+        + '<div class="report-icon ' + (isPag ? 'paginated' : 'standard') + '">' + (isPag ? paginatedIcon : standardIcon) + '</div>'
+        + '<div class="report-name">' + escHtml(r.report_name) + '</div>'
+        + '<div class="report-meta"><span class="report-workspace">' + escHtml(r.workspace_name || 'Power BI') + '</span>'
+        + (isPag ? '<span class="report-type-tag">Paginated</span>' : '')
+        + '</div>'
+        + '<span class="btn btn-primary btn-sm">View report →</span>'
+        + '</a>';
+    }
+
     function renderReports(reports) {
-      const grid = document.getElementById('report-grid');
-      const noResults = document.getElementById('no-results');
-      grid.innerHTML = '';
-      if (!reports.length) { noResults.style.display = ''; return; }
+      var noResults = document.getElementById('no-results');
       noResults.style.display = 'none';
-      const isPag = r => r.report_type === 'PaginatedReport';
-      reports.forEach(r => {
-        const card = document.createElement('a');
-        card.className = 'report-card';
-        card.href = `/report.html?id=${r.id}`;
-        card.innerHTML = `
-          <div class="report-icon ${isPag(r)?'paginated':'standard'}">${isPag(r)?paginatedIcon:standardIcon}</div>
-          <div class="report-name">${escHtml(r.report_name)}</div>
-          <div class="report-meta">
-            <span class="report-workspace">${escHtml(r.workspace_name||'Power BI')}</span>
-            ${isPag(r)?'<span class="report-type-tag paginated">Paginated</span>':''}
-          </div>
-          <span class="btn btn-primary btn-sm">View report →</span>`;
-        grid.appendChild(card);
-      });
-      document.getElementById('report-count').textContent = `${reports.length} report${reports.length===1?'':'s'} available to you`;
+
+      if (!reports.length) { noResults.style.display = ''; return; }
+
+      var pinned = reports.filter(function(r) { return r.is_favourite; });
+      var rest   = reports.filter(function(r) { return !r.is_favourite; });
+
+      var pinnedSection = document.getElementById('pinned-section');
+      var pinnedGrid    = document.getElementById('pinned-grid');
+      var allLabel      = document.getElementById('all-label');
+      var grid          = document.getElementById('report-grid');
+
+      if (pinned.length) {
+        pinnedSection.style.display = '';
+        pinnedGrid.innerHTML = pinned.map(makeCard).join('');
+      } else {
+        pinnedSection.style.display = 'none';
+      }
+
+      allLabel.style.display = pinned.length ? '' : 'none';
+      grid.innerHTML = rest.map(makeCard).join('');
+
+      document.getElementById('report-count').textContent = allReports.length + ' report' + (allReports.length === 1 ? '' : 's') + ' available to you';
     }
 
     function filterReports() {
-      const q = document.getElementById('search-input').value.toLowerCase();
-      const ws = document.getElementById('workspace-filter').value;
-      const filtered = allReports.filter(r => {
-        const matchQ = !q || r.report_name.toLowerCase().includes(q) || (r.workspace_name||'').toLowerCase().includes(q);
-        const matchWs = !ws || r.workspace_name === ws;
+      var q  = document.getElementById('search-input').value.toLowerCase();
+      var ws = document.getElementById('workspace-filter').value;
+      var filtered = allReports.filter(function(r) {
+        var matchQ  = !q || r.report_name.toLowerCase().indexOf(q) !== -1 || (r.workspace_name || '').toLowerCase().indexOf(q) !== -1;
+        var matchWs = !ws || r.workspace_name === ws;
         return matchQ && matchWs;
       });
       renderReports(filtered);
     }
 
-    function initials(n) {
-      const parts = n.trim().split(/\s+/);
-      if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
-      return n.split('@')[0].slice(0,2).toUpperCase();
+    async function toggleFav(event, rid) {
+      event.preventDefault();
+      event.stopPropagation();
+      var r = allReports.find(function(x) { return x.id === rid; });
+      if (!r) return;
+      var newFav = !r.is_favourite;
+      var method = newFav ? 'POST' : 'DELETE';
+      try {
+        var res = await csrfFetch('/api/favourites/' + rid, method);
+        if (res.status === 401) { location.href = '/login.html'; return; }
+        if (!res.ok) { console.error('Favourite toggle failed:', res.status); return; }
+        r.is_favourite = newFav;
+        filterReports();
+      } catch(err) { console.error('Favourite toggle error:', err); }
     }
+
+    function initials(n) { var p = n.trim().split(/\s+/); if (p.length >= 2) return (p[0][0] + p[p.length-1][0]).toUpperCase(); return n.split('@')[0].slice(0,2).toUpperCase(); }
     function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-    init().catch(err => { console.error(err); document.getElementById('loading').innerHTML='<p style="color:#e05252">Failed to load. Please refresh.</p>'; });
+    // Session timeout warning
+    (function() {
+      var warnAt = (8 * 60 - 15) * 60 * 1000;
+      setTimeout(function() {
+        var m = document.getElementById('session-warning');
+        if (m) m.style.display = 'flex';
+      }, warnAt);
+      window.extendSession = function() {
+        fetch('/api/me').then(function() {
+          var m = document.getElementById('session-warning');
+          if (m) m.style.display = 'none';
+        });
+      };
+    })();
+
+    var _csrfToken = null;
+    async function getCsrfToken() {
+      if (_csrfToken) return _csrfToken;
+      try {
+        var r = await fetch('/api/csrf-token');
+        if (r.ok) { var d = await r.json(); _csrfToken = d.token; }
+      } catch(_) {}
+      return _csrfToken;
+    }
+    async function csrfFetch(url, method) {
+      var tok = await getCsrfToken();
+      var headers = {};
+      if (tok) headers['X-CSRF-Token'] = tok;
+      var res = await fetch(url, { method: method, headers: headers });
+      if (res.status === 403) _csrfToken = null;
+      return res;
+    }
+
+        init().catch(function(e) { console.error(e); document.getElementById('loading').innerHTML = '<p style="color:#e05252">Failed to load. Please refresh.</p>'; });
   </script>
 </body>
 </html>
