@@ -7,7 +7,7 @@ A white-label Power BI embedded portal using the App Owns Data pattern. Built fo
 - Authenticates users via Microsoft Entra ID (single-tenant)
 - Serves Power BI reports (standard and paginated) to authorised users
 - Manages access via groups, individual overrides, and domain/email allow/block rules
-- Provides a full admin panel for managing users, groups, reports, and branding
+- Provides a full admin panel for managing users, groups, reports, access rules, branding and audit logs
 - Supports row-level security (RLS) with OID-based identity
 
 ## Stack
@@ -33,8 +33,6 @@ A white-label Power BI embedded portal using the App Owns Data pattern. Built fo
 2. Set the redirect URI to `http://localhost:3000/auth/callback` (for local dev)
 3. Under **Certificates & secrets**, create a client secret
 4. Under **API permissions**, add:
-   - `Power BI Service > Report.Read.All` (Application)
-   - `Power BI Service > Dataset.Read.All` (Application)
    - `Microsoft Graph > User.Read.All` (Application)
    - Grant admin consent for all
 5. Note your **Tenant ID**, **Client ID**, and **Client Secret**
@@ -57,13 +55,13 @@ npm install
 
 # 2. Configure environment
 cp .env.example .env
-# Edit .env with your Tenant ID, Client ID, Client Secret, and a random SESSION_SECRET
+# Edit .env with your Tenant ID, Client ID, Client Secret, admin email and a random SESSION_SECRET
 
 # 3. Start
 npm start
 ```
 
-Navigate to `http://localhost:3000`. The first **member** (non-guest) to sign in becomes the admin automatically.
+Navigate to `http://localhost:3000` and login with initial admin email account.
 
 ---
 
@@ -71,10 +69,10 @@ Navigate to `http://localhost:3000`. The first **member** (non-guest) to sign in
 
 1. Sign in with a member account from your tenant
 2. Go to `/admin.html`
-3. **Reports tab** → Sync workspaces → Add the reports you want to make available
-4. **Groups tab** → Create a group, assign reports to it
-5. **Users tab** → Add users (via tenant search), assign them to the group
-6. Users can now sign in and see their reports at `/dashboard.html`
+3. **Reports tab** → Sync workspaces → Add the reports you want to make available (and setup RLS roles if required).
+4. **Groups tab** → Create a group, assign reports to it.
+5. **Users tab** → Add users (via tenant search), assign them to the group (or add reports directly to users).
+6. Users can now sign in and see their reports at `/dashboard.html`.
 
 ---
 
@@ -103,7 +101,7 @@ Or using email (if your data contains email addresses):
 
 ### Configuring RLS in the portal
 
-1. In **Reports tab**, set the role name(s) on the report — use **↓ Fetch roles** to pull names directly from the dataset
+1. In **Reports tab**, set the role name(s) on the report
 2. In **Groups tab** or **Users tab**, you can override the role per group or per user
 3. Role priority: user override → group role → report-level role → no RLS
 
@@ -171,11 +169,13 @@ If an admin enters a role name that doesn't exist in the dataset (e.g. a typo, w
 |---|---|---|
 | `TENANT_ID` | Yes | Azure AD tenant ID |
 | `CLIENT_ID` | Yes | App registration client ID |
+| `ADMIN_EMAIL` | Yes | Email address of the initial admin user |
 | `CLIENT_SECRET` | Yes | App registration client secret |
 | `REDIRECT_URI` | Yes | OAuth callback URL (must match app registration) |
 | `SESSION_SECRET` | Yes | Random string for signing session cookies |
 | `PORT` | No | Server port (default: 3000) |
 | `NODE_ENV` | No | Set to `production` for secure cookies and combined logging |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | No | Azure App Service Application Settings to enable telemetry |
 
 ---
 
