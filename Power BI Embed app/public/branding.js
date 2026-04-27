@@ -1,6 +1,10 @@
 /**
  * branding.js – loaded by every page.
- * Fetches /api/branding and applies colours, text, logo, and footer.
+ * Fetches /api/branding and applies colours, text, logo, favicon, footer,
+ * and browser title.
+ *
+ * Exposes window.__portalTagline so report.html can use it when setting
+ * the per-report document.title.
  */
 (async function applyBranding() {
   try {
@@ -30,13 +34,14 @@
       document.querySelectorAll('[data-brand-logo-mark]').forEach(el => { el.style.display = 'none'; });
     }
 
-    // Apply favicon — use configured URL or fall back to Power BI favicon
+    // Favicon
     const faviconUrl = b.favicon_url || 'https://app.powerbi.com/images/PowerBI_Favicon.ico';
     const existingFav = document.querySelector('link[rel="icon"]');
     const favLink = existingFav || document.createElement('link');
     favLink.rel = 'icon'; favLink.href = faviconUrl;
     if (!existingFav) document.head.appendChild(favLink);
 
+    // Footer
     const footerLeft = document.getElementById('footer-left');
     if (footerLeft) {
       if (b.footer_left) {
@@ -45,6 +50,20 @@
         footerLeft.innerHTML = 'Built for the <a href="https://github.com/MB-Motive/NFP-Power-Platform-Library" target="_blank">NFP Power Platform Library</a>';
       }
     }
+
+    // Browser title — "{Org Name} – {Tagline}"
+    // Store tagline globally so report.html can append the report name.
+    const org     = b.org_name     || 'Your Organisation';
+    const tagline = b.portal_tagline || 'Insights Portal';
+    window.__portalTagline = tagline;
+    window.__portalOrg     = org;
+
+    // Only set document.title here on non-report pages.
+    // report.html sets its own title once the report name is known.
+    if (!document.querySelector('#embed-container')) {
+      document.title = org + ' \u2013 ' + tagline;
+    }
+
   } catch (_) {}
 })();
 
