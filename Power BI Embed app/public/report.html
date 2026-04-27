@@ -473,7 +473,7 @@
         var reportMeta = allReports.find(function(r) { return r.id === reportDbId; });
         var reportName = reportMeta ? reportMeta.report_name : 'Report';
         document.getElementById('report-name').textContent = reportName;
-        document.title = reportName + ' – Insights Portal';
+        document.title = reportName + ' – ' + (window.__portalTagline || 'Insights Portal');
 
         // Update fav button
         updateFavBtn(reportMeta ? !!reportMeta.is_favourite : false);
